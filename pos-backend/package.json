@@ -15,11 +15,12 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1",
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
+    "mongose": "^0.0.2-security",
     "razorpay": "^2.9.5"
   },
   "devDependencies": {
