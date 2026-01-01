@@ -17,19 +17,49 @@ const TableCard = ({id, name, status, initials, seats}) => {
   };
 
   return (
-    <div onClick={() => handleClick(name)} key={id} className="w-[300px] hover:bg-[#2c2c2c] bg-[#262626] p-4 rounded-lg cursor-pointer">
-      <div className="flex items-center justify-between px-1">
-        <h1 className="text-[#f5f5f5] text-xl font-semibold">Table <FaLongArrowAltRight className="text-[#ababab] ml-2 inline" /> {name}</h1>
-        <p className={`${status === "Booked" ? "text-green-600 bg-[#2e4a40]" : "bg-[#664a04] text-white"} px-2 py-1 rounded-lg`}>
-          {status}
-        </p>
-      </div>
-      <div className="flex items-center justify-center mt-5 mb-8">
-        <h1 className={`text-white rounded-full p-5 text-xl`} style={{backgroundColor : initials ? getBgColor() : "#1f1f1f"}} >{getAvatarName(initials) || "N/A"}</h1>
-      </div>
-      <p className="text-[#ababab] text-xs">Seats: <span className="text-[#f5f5f5]">{seats}</span></p>
+  //   <div onClick={() => handleClick(name)} key={id} className="w-[300px] hover:bg-[#2c2c2c] bg-[#262626] p-4 rounded-lg cursor-pointer">
+  //     <div className="flex items-center justify-between px-1">
+  //       <h1 className="text-[#f5f5f5] text-xl font-semibold">Table <FaLongArrowAltRight className="text-[#ababab] ml-2 inline" /> {name}</h1>
+  //       <p className={`${status === "Booked" ? "text-green-600 bg-[#2e4a40]" : "bg-[#664a04] text-white"} px-2 py-1 rounded-lg`}>
+  //         {status}
+  //       </p>
+  //     </div>
+  //     <div className="flex items-center justify-center mt-5 mb-8">
+  //       <h1 className={`text-white rounded-full p-5 text-xl`} style={{backgroundColor : initials ? getBgColor() : "#1f1f1f"}} >{getAvatarName(initials) || "N/A"}</h1>
+  //     </div>
+  //     <p className="text-[#ababab] text-xs">Seats: <span className="text-[#f5f5f5]">{seats}</span></p>
+  //   </div>
+    <div 
+  onClick={() => handleClick(name)} 
+  className="w-full h-full hover:bg-[#2c2c2c] bg-[#262626] p-4 rounded-lg cursor-pointer flex flex-col"
+>
+  <div className="flex items-center justify-between">
+    <h1 className="text-[#f5f5f5] text-lg font-semibold truncate">
+      Table <FaLongArrowAltRight className="text-[#ababab] mx-1 inline" /> {name}
+    </h1>
+    <p className={`text-sm whitespace-nowrap px-2 py-1 rounded-lg ${
+      status === "Booked" 
+        ? "text-green-400 bg-[#2e4a40]" 
+        : "bg-[#664a04] text-amber-300"
+    }`}>
+      {status}
+    </p>
+  </div>
+  
+  <div className="flex-1 flex items-center justify-center my-4">
+    <div 
+      className={`text-white rounded-full p-4 text-lg flex items-center justify-center aspect-square`} 
+      style={{backgroundColor: initials ? getBgColor() : "#1f1f1f"}}
+    >
+      {getAvatarName(initials) || "N/A"}
     </div>
-  );
+  </div>
+  
+  <p className="text-[#ababab] text-xs mt-auto">
+    Seats: <span className="text-[#f5f5f5] font-medium">{seats}</span>
+  </p>
+</div>
+);
 };
 
 export default TableCard;

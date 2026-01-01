@@ -60,6 +60,7 @@ const Tables = () => {
         {resData?.data.data.map((table) => {
           return (
             <TableCard
+              key={table._id || index} 
               id={table._id}
               name={table.tableNo}
               status={table.status}
