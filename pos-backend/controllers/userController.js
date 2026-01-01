@@ -22,7 +22,7 @@ const register = async (req, res, next) => {
 
 
         const user = { name, phone, email, password, role };
-        const newUser = User(user);
+        const newUser = new User(user);
         await newUser.save();
 
         res.status(201).json({success: true, message: "New user created!", data: newUser});

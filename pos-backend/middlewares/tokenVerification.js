@@ -6,7 +6,6 @@ const User = require("../models/userModel");
 
 const isVerifiedUser = async (req, res, next) => {
     try{
-
         const { accessToken } = req.cookies;
         
         if(!accessToken){
