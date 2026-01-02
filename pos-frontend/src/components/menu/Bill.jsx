@@ -1,21 +1,21 @@
-import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getTotalPrice } from "../../redux/slices/cartSlice";
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getTotalPrice } from '../../redux/slices/cartSlice';
 import {
   addOrder,
   createOrderRazorpay,
   updateTable,
   verifyPaymentRazorpay,
-} from "../../https/index";
-import { enqueueSnackbar } from "notistack";
-import { useMutation } from "@tanstack/react-query";
-import { removeAllItems } from "../../redux/slices/cartSlice";
-import { removeCustomer } from "../../redux/slices/customerSlice";
-import Invoice from "../invoice/Invoice";
+} from '../../https/index';
+import { enqueueSnackbar } from 'notistack';
+import { useMutation } from '@tanstack/react-query';
+import { removeAllItems } from '../../redux/slices/cartSlice';
+import { removeCustomer } from '../../redux/slices/customerSlice';
+import Invoice from '../invoice/Invoice';
 
 function loadScript(src) {
   return new Promise((resolve) => {
-    const script = document.createElement("script");
+    const script = document.createElement('script');
     script.src = src;
     script.onload = () => {
       resolve(true);
@@ -43,23 +43,23 @@ const Bill = () => {
 
   const handlePlaceOrder = async () => {
     if (!paymentMethod) {
-      enqueueSnackbar("Please select a payment method!", {
-        variant: "warning",
+      enqueueSnackbar('Please select a payment method!', {
+        variant: 'warning',
       });
 
       return;
     }
 
-    if (paymentMethod === "Online") {
+    if (paymentMethod === 'Online') {
       // load the script
       try {
         const res = await loadScript(
-          "https://checkout.razorpay.com/v1/checkout.js"
+          'https://checkout.razorpay.com/v1/checkout.js',
         );
 
         if (!res) {
-          enqueueSnackbar("Razorpay SDK failed to load. Are you online?", {
-            variant: "warning",
+          enqueueSnackbar('Razorpay SDK failed to load. Are you online?', {
+            variant: 'warning',
           });
           return;
         }
@@ -76,13 +76,13 @@ const Bill = () => {
           key: `${import.meta.env.VITE_RAZORPAY_KEY_ID}`,
           amount: data.order.amount,
           currency: data.order.currency,
-          name: "RESTRO",
-          description: "Secure Payment for Your Meal",
+          name: 'RESTRO',
+          description: 'Secure Payment for Your Meal',
           order_id: data.order.id,
           handler: async function (response) {
             const verification = await verifyPaymentRazorpay(response);
             console.log(verification);
-            enqueueSnackbar(verification.data.message, { variant: "success" });
+            enqueueSnackbar(verification.data.message, { variant: 'success' });
 
             // Place the order
             const orderData = {
@@ -91,7 +91,7 @@ const Bill = () => {
                 phone: customerData.customerPhone,
                 guests: customerData.guests,
               },
-              orderStatus: "In Progress",
+              orderStatus: 'In Progress',
               bills: {
                 total: total,
                 tax: tax,
@@ -112,18 +112,18 @@ const Bill = () => {
           },
           prefill: {
             name: customerData.name,
-            email: "",
+            email: '',
             contact: customerData.phone,
           },
-          theme: { color: "#025cca" },
+          theme: { color: '#025cca' },
         };
 
         const rzp = new window.Razorpay(options);
         rzp.open();
       } catch (error) {
         console.log(error);
-        enqueueSnackbar("Payment Failed!", {
-          variant: "error",
+        enqueueSnackbar('Payment Failed!', {
+          variant: 'error',
         });
       }
     } else {
@@ -134,7 +134,7 @@ const Bill = () => {
           phone: customerData.customerPhone,
           guests: customerData.guests,
         },
-        orderStatus: "In Progress",
+        orderStatus: 'In Progress',
         bills: {
           total: total,
           tax: tax,
@@ -158,7 +158,7 @@ const Bill = () => {
 
       // Update Table
       const tableData = {
-        status: "Booked",
+        status: 'Booked',
         orderId: data._id,
         tableId: data.table,
       };
@@ -167,8 +167,8 @@ const Bill = () => {
         tableUpdateMutation.mutate(tableData);
       }, 1500);
 
-      enqueueSnackbar("Order Placed!", {
-        variant: "success",
+      enqueueSnackbar('Order Placed!', {
+        variant: 'success',
       });
       setShowInvoice(true);
     },
@@ -213,17 +213,17 @@ const Bill = () => {
       </div>
       <div className="flex items-center gap-3 px-5 mt-4">
         <button
-          onClick={() => setPaymentMethod("Cash")}
+          onClick={() => setPaymentMethod('Cash')}
           className={`bg-[#1f1f1f] px-4 py-3 w-full rounded-lg text-[#ababab] font-semibold ${
-            paymentMethod === "Cash" ? "bg-[#383737]" : ""
+            paymentMethod === 'Cash' ? 'bg-[#383737]' : ''
           }`}
         >
           Cash
         </button>
         <button
-          onClick={() => setPaymentMethod("Online")}
+          onClick={() => setPaymentMethod('Online')}
           className={`bg-[#1f1f1f] px-4 py-3 w-full rounded-lg text-[#ababab] font-semibold ${
-            paymentMethod === "Online" ? "bg-[#383737]" : ""
+            paymentMethod === 'Online' ? 'bg-[#383737]' : ''
           }`}
         >
           Online

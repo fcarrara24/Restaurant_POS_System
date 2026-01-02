@@ -1,13 +1,13 @@
-import React from "react";
-import { FaSearch } from "react-icons/fa";
-import OrderList from "./OrderList";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { enqueueSnackbar } from "notistack";
-import { getOrders } from "../../https/index";
+import React from 'react';
+import { FaSearch } from 'react-icons/fa';
+import OrderList from './OrderList';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { enqueueSnackbar } from 'notistack';
+import { getOrders } from '../../https/index';
 
 const RecentOrders = () => {
   const { data: resData, isError } = useQuery({
-    queryKey: ["orders"],
+    queryKey: ['orders'],
     queryFn: async () => {
       return await getOrders();
     },
@@ -15,7 +15,7 @@ const RecentOrders = () => {
   });
 
   if (isError) {
-    enqueueSnackbar("Something went wrong!", { variant: "error" });
+    enqueueSnackbar('Something went wrong!', { variant: 'error' });
   }
 
   return (

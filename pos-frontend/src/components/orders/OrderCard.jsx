@@ -1,7 +1,7 @@
-import React from "react";
-import { FaCheckDouble, FaLongArrowAltRight } from "react-icons/fa";
-import { FaCircle } from "react-icons/fa";
-import { formatDateAndTime, getAvatarName } from "../../utils/index";
+import React from 'react';
+import { FaCheckDouble, FaLongArrowAltRight } from 'react-icons/fa';
+import { FaCircle } from 'react-icons/fa';
+import { formatDateAndTime, getAvatarName } from '../../utils/index';
 
 const OrderCard = ({ key, order }) => {
   console.log(order);
@@ -16,11 +16,17 @@ const OrderCard = ({ key, order }) => {
             <h1 className="text-[#f5f5f5] text-lg font-semibold tracking-wide">
               {order.customerDetails.name}
             </h1>
-            <p className="text-[#ababab] text-sm">#{Math.floor(new Date(order.orderDate).getTime())} / Dine in</p>
-            <p className="text-[#ababab] text-sm">Table <FaLongArrowAltRight className="text-[#ababab] ml-2 inline" /> {order.table.tableNo}</p>
+            <p className="text-[#ababab] text-sm">
+              #{Math.floor(new Date(order.orderDate).getTime())} / Dine in
+            </p>
+            <p className="text-[#ababab] text-sm">
+              Table{' '}
+              <FaLongArrowAltRight className="text-[#ababab] ml-2 inline" />{' '}
+              {order.table.tableNo}
+            </p>
           </div>
           <div className="flex flex-col items-end gap-2">
-            {order.orderStatus === "Ready" ? (
+            {order.orderStatus === 'Ready' ? (
               <>
                 <p className="text-green-600 bg-[#2e4a40] px-2 py-1 rounded-lg">
                   <FaCheckDouble className="inline mr-2" /> {order.orderStatus}
@@ -36,7 +42,8 @@ const OrderCard = ({ key, order }) => {
                   <FaCircle className="inline mr-2" /> {order.orderStatus}
                 </p>
                 <p className="text-[#ababab] text-sm">
-                  <FaCircle className="inline mr-2 text-yellow-600" /> Preparing your order
+                  <FaCircle className="inline mr-2 text-yellow-600" /> Preparing
+                  your order
                 </p>
               </>
             )}
@@ -50,7 +57,9 @@ const OrderCard = ({ key, order }) => {
       <hr className="w-full mt-4 border-t-1 border-gray-500" />
       <div className="flex items-center justify-between mt-4">
         <h1 className="text-[#f5f5f5] text-lg font-semibold">Total</h1>
-        <p className="text-[#f5f5f5] text-lg font-semibold">₹{order.bills.totalWithTax.toFixed(2)}</p>
+        <p className="text-[#f5f5f5] text-lg font-semibold">
+          ₹{order.bills.totalWithTax.toFixed(2)}
+        </p>
       </div>
     </div>
   );

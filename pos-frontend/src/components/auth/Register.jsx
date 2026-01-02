@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import { register } from "../../https";
-import { useMutation } from "@tanstack/react-query";
-import { enqueueSnackbar } from "notistack";
+import React, { useState } from 'react';
+import { register } from '../../https';
+import { useMutation } from '@tanstack/react-query';
+import { enqueueSnackbar } from 'notistack';
 
-const Register = ({setIsRegister}) => {
+const Register = ({ setIsRegister }) => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-    role: "",
+    name: '',
+    email: '',
+    phone: '',
+    password: '',
+    role: '',
   });
 
   const handleChange = (e) => {
@@ -29,15 +29,15 @@ const Register = ({setIsRegister}) => {
     mutationFn: (reqData) => register(reqData),
     onSuccess: (res) => {
       const { data } = res;
-      enqueueSnackbar(data.message, { variant: "success" });
+      enqueueSnackbar(data.message, { variant: 'success' });
       setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        password: "",
-        role: "",
+        name: '',
+        email: '',
+        phone: '',
+        password: '',
+        role: '',
       });
-      
+
       setTimeout(() => {
         setIsRegister(false);
       }, 1500);
@@ -45,7 +45,7 @@ const Register = ({setIsRegister}) => {
     onError: (error) => {
       const { response } = error;
       const message = response.data.message;
-      enqueueSnackbar(message, { variant: "error" });
+      enqueueSnackbar(message, { variant: 'error' });
     },
   });
 
@@ -122,14 +122,14 @@ const Register = ({setIsRegister}) => {
           </label>
 
           <div className="flex item-center gap-3 mt-4">
-            {["Waiter", "Cashier", "Admin"].map((role) => {
+            {['Waiter', 'Cashier', 'Admin'].map((role) => {
               return (
                 <button
                   key={role}
                   type="button"
                   onClick={() => handleRoleSelection(role)}
                   className={`bg-[#1f1f1f] px-4 py-3 w-full rounded-lg text-[#ababab] ${
-                    formData.role === role ? "bg-indigo-700" : ""
+                    formData.role === role ? 'bg-indigo-700' : ''
                   }`}
                 >
                   {role}

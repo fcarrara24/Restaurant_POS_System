@@ -3,6 +3,7 @@
 Thank you for considering contributing to the **Restaurant POS System**! Your help is essential for making this project even better. 💖
 
 ## 🧾 Table of Contents
+
 - [How to Contribute](#-how-to-contribute)
 - [Contribution Guidelines](#-contribution-guidelines)
 - [Pull Request Process](#-pull-request-process)
@@ -24,11 +25,13 @@ Thank you for considering contributing to the **Restaurant POS System**! Your he
    cd Restaurant-POS-System
    ```
 4. **Create a new branch** 🌿
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
 
 5. **Navigate to the backend and frontend directories**
+
    ```bash
    cd pos-backend
    npm install
@@ -41,6 +44,7 @@ Thank you for considering contributing to the **Restaurant POS System**! Your he
    - Create a `.env` file in both `pos-backend` and `pos-frontend` using `.env.example` as a reference.
 
 7. **Run the backend server** (Port: `8000`)
+
    ```bash
    cd pos-backend
    npm run dev
@@ -53,13 +57,17 @@ Thank you for considering contributing to the **Restaurant POS System**! Your he
    ```
 9. **Make your changes** ✨
 10. **Commit your changes** 💾
-   ```bash
-   git commit -m "Add: A meaningful commit message"
-   ```
+
+```bash
+git commit -m "Add: A meaningful commit message"
+```
+
 11. **Push to your branch** 👤
-   ```bash
-   git push origin feature/your-feature-name
-   ```
+
+```bash
+git push origin feature/your-feature-name
+```
+
 12. **Create a Pull Request** 🛠️
 
 ---
@@ -101,4 +109,3 @@ Original UI design can be found on [Behance](https://www.behance.net/gallery/210
 This project is licensed under the [MIT License](LICENSE).
 
 Happy Coding! 💻🎉
-

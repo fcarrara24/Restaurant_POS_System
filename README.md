@@ -1,4 +1,4 @@
-# 🍽️ **Restaurant POS System**  
+# 🍽️ **Restaurant POS System**
 
 A full-featured **Restaurant POS System** built using the **MERN Stack** to streamline restaurant operations, enhance customer experience, and manage orders, payments, and inventory with ease.
 
@@ -19,27 +19,27 @@ A full-featured **Restaurant POS System** built using the **MERN Stack** to stre
 - 🧾 **Billing & Invoicing**  
   Automatically generate detailed bills and invoices for every order.
 
-
 ## 🏗️ **Tech Stack**
 
-| **Category**             | **Technology**                |
-|--------------------------|-------------------------------|
-| 🖥️ **Frontend**          | React.js, Redux, Tailwind CSS  |
-| 🔙 **Backend**           | Node.js, Express.js           |
-| 🗄️ **Database**          | MongoDB                       |
-| 🔐 **Authentication**    | JWT, bcrypt                   |
-| 💳 **Payment Integration**| Razorpay    |
-| 📊 **State Management**   | Redux Toolkit                 |
-| ⚡ **Data Fetching & Caching** | React Query            |
-| 🔗 **APIs**              | RESTful APIs                   |
+| **Category**                   | **Technology**                |
+| ------------------------------ | ----------------------------- |
+| 🖥️ **Frontend**                | React.js, Redux, Tailwind CSS |
+| 🔙 **Backend**                 | Node.js, Express.js           |
+| 🗄️ **Database**                | MongoDB                       |
+| 🔐 **Authentication**          | JWT, bcrypt                   |
+| 💳 **Payment Integration**     | Razorpay                      |
+| 📊 **State Management**        | Redux Toolkit                 |
+| ⚡ **Data Fetching & Caching** | React Query                   |
+| 🔗 **APIs**                    | RESTful APIs                  |
 
 ---
+
 <br>
 
 ## 📺 **YouTube Playlist**
 
 🎬 Follow the complete tutorial series on building this Restaurant POS System on YouTube:  
-👉 [Watch the Playlist](https://www.youtube.com/playlist?list=PL9OdiypqS7Nk0DHnSNFIi8RgEFJCIWB6X)  
+👉 [Watch the Playlist](https://www.youtube.com/playlist?list=PL9OdiypqS7Nk0DHnSNFIi8RgEFJCIWB6X)
 
 ## 📁 **Assets**
 
@@ -74,7 +74,6 @@ A full-featured **Restaurant POS System** built using the **MERN Stack** to stre
     <td><img src="https://res.cloudinary.com/amritrajmaurya/image/upload/v1740502772/fc4tiwzdoisqwac1j01y.png" alt="Screenshot 5" width="300"/></td>
   </tr>
 </table>
-
 
 ✨ Feel free to explore, contribute, and enhance the project! 🚀
 

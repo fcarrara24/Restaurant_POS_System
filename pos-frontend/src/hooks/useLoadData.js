@@ -1,8 +1,8 @@
-import { useDispatch } from "react-redux";
-import { getUserData } from "../https";
-import { useEffect, useState } from "react";
-import { removeUser, setUser } from "../redux/slices/userSlice";
-import { useNavigate } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { getUserData } from '../https';
+import { useEffect, useState } from 'react';
+import { removeUser, setUser } from '../redux/slices/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 const useLoadData = () => {
   const dispatch = useDispatch();
@@ -18,8 +18,8 @@ const useLoadData = () => {
         dispatch(setUser({ _id, name, email, phone, role }));
       } catch (error) {
         dispatch(removeUser());
-        navigate("/auth");
-      }finally{
+        navigate('/auth');
+      } finally {
         setIsLoading(false);
       }
     };
