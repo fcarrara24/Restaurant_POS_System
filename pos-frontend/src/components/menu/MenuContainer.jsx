@@ -8,30 +8,41 @@ import { addItems } from "../../redux/slices/cartSlice";
 
 const MenuContainer = () => {
   const [selected, setSelected] = useState(menus[0]);
-  const [itemCount, setItemCount] = useState(0);
+  const [itemCounts, setItemCounts] = useState({});
   const [itemId, setItemId] = useState();
   const dispatch = useDispatch();
 
-  const increment = (id) => {
-    setItemId(id);
-    if (itemCount >= 4) return;
-    setItemCount((prev) => prev + 1);
+  const incrementCount = (itemId) => {
+    setItemCounts(prev => ({
+      ...prev,
+      [itemId]: (prev[itemId] || 0) + 1
+    }));
   };
 
-  const decrement = (id) => {
-    setItemId(id);
-    if (itemCount <= 0) return;
-    setItemCount((prev) => prev - 1);
-  };
+  const decrementCount = (itemId) => {
+  setItemCounts(prev => {
+    if (!prev[itemId] || prev[itemId] <= 0) return prev;
+    return {
+      ...prev,
+      [itemId]: prev[itemId] - 1
+    };
+  });
+};
+
+const getItemCount = (itemId) => itemCounts[itemId] || 0;
 
   const handleAddToCart = (item) => {
-    if(itemCount === 0) return;
+    const count = getItemCount(item.id);
+    if(count === 0) return;
 
     const {name, price} = item;
-    const newObj = { id: new Date(), name, pricePerQuantity: price, quantity: itemCount, price: price * itemCount };
+    const newObj = { id: new Date(), name, pricePerQuantity: price, quantity: count, price: price * count };
 
     dispatch(addItems(newObj));
-    setItemCount(0);
+    setItemCounts(prev => ({
+      ...prev,
+      [item.id]: 0
+    }));
   }
 
 
@@ -46,8 +57,7 @@ const MenuContainer = () => {
               style={{ backgroundColor: menu.bgColor }}
               onClick={() => {
                 setSelected(menu);
-                setItemId(0);
-                setItemCount(0);
+                setItemCounts({});
               }}
             >
               <div className="flex items-center justify-between w-full">
@@ -85,18 +95,18 @@ const MenuContainer = () => {
                 <p className="text-[#f5f5f5] text-xl font-bold">
                   ₹{item.price}
                 </p>
-                <div className="flex items-center justify-between bg-[#1f1f1f] px-4 py-3 rounded-lg gap-6 w-[50%]">
+                <div className="flex items-center justify-between bg-[#1f1f1f] px-4 py-3 rounded-lg gap-2 w-[50%]">
                   <button
-                    onClick={() => decrement(item.id)}
+                    onClick={() => decrementCount(item.id)}
                     className="text-yellow-500 text-2xl"
                   >
                     &minus;
                   </button>
                   <span className="text-white">
-                    {itemId == item.id ? itemCount : "0"}
+                    {getItemCount(item.id)}
                   </span>
                   <button
-                    onClick={() => increment(item.id)}
+                    onClick={() => incrementCount(item.id)}
                     className="text-yellow-500 text-2xl"
                   >
                     &#43;
