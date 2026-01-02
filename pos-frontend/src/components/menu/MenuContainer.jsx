@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import React, { useState } from 'react';
 import { menus } from '../../constants';
 import { GrRadialSelected } from 'react-icons/gr';
@@ -36,7 +37,7 @@ const MenuContainer = () => {
 
     const { name, price } = item;
     const newObj = {
-      id: new Date(),
+      id: uuidv4(),  // Genera un ID univoco per ogni elemento
       name,
       pricePerQuantity: price,
       quantity: count,
@@ -102,7 +103,7 @@ const MenuContainer = () => {
               </div>
               <div className="flex items-center justify-between w-full">
                 <p className="text-[#f5f5f5] text-xl font-bold">
-                  ₹{item.price}
+                  €{item.price}
                 </p>
                 <div className="flex items-center justify-between bg-[#1f1f1f] px-4 py-3 rounded-lg gap-2 w-[50%]">
                   <button

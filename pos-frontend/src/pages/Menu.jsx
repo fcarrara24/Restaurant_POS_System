@@ -49,7 +49,7 @@ const Menu = () => {
         <CustomerInfo />
         <hr className="border-[#2a2a2a] border-t-2" />
         {/* Cart Items */}
-        <CartInfo />
+        <CartInfo key={customerData.customerName || 'default'} />
         <hr className="border-[#2a2a2a] border-t-2" />
         {/* Bills */}
         <Bill />
