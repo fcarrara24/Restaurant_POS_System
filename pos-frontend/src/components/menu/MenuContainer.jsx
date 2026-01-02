@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import { menus } from "../../constants";
-import { GrRadialSelected } from "react-icons/gr";
-import { FaShoppingCart } from "react-icons/fa";
-import { useDispatch } from "react-redux";
-import { addItems } from "../../redux/slices/cartSlice";
-
+import React, { useState } from 'react';
+import { menus } from '../../constants';
+import { GrRadialSelected } from 'react-icons/gr';
+import { FaShoppingCart } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
+import { addItems } from '../../redux/slices/cartSlice';
 
 const MenuContainer = () => {
   const [selected, setSelected] = useState(menus[0]);
@@ -13,38 +12,43 @@ const MenuContainer = () => {
   const dispatch = useDispatch();
 
   const incrementCount = (itemId) => {
-    setItemCounts(prev => ({
+    setItemCounts((prev) => ({
       ...prev,
-      [itemId]: (prev[itemId] || 0) + 1
+      [itemId]: (prev[itemId] || 0) + 1,
     }));
   };
 
   const decrementCount = (itemId) => {
-  setItemCounts(prev => {
-    if (!prev[itemId] || prev[itemId] <= 0) return prev;
-    return {
-      ...prev,
-      [itemId]: prev[itemId] - 1
-    };
-  });
-};
+    setItemCounts((prev) => {
+      if (!prev[itemId] || prev[itemId] <= 0) return prev;
+      return {
+        ...prev,
+        [itemId]: prev[itemId] - 1,
+      };
+    });
+  };
 
-const getItemCount = (itemId) => itemCounts[itemId] || 0;
+  const getItemCount = (itemId) => itemCounts[itemId] || 0;
 
   const handleAddToCart = (item) => {
     const count = getItemCount(item.id);
-    if(count === 0) return;
+    if (count === 0) return;
 
-    const {name, price} = item;
-    const newObj = { id: new Date(), name, pricePerQuantity: price, quantity: count, price: price * count };
+    const { name, price } = item;
+    const newObj = {
+      id: new Date(),
+      name,
+      pricePerQuantity: price,
+      quantity: count,
+      price: price * count,
+    };
 
     dispatch(addItems(newObj));
-    setItemCounts(prev => ({
+    setItemCounts((prev) => ({
       ...prev,
-      [item.id]: 0
+      [item.id]: 0,
     }));
-  }
-
+  };
 
   return (
     <>
@@ -89,7 +93,12 @@ const getItemCount = (itemId) => itemCounts[itemId] || 0;
                 <h1 className="text-[#f5f5f5] text-lg font-semibold">
                   {item.name}
                 </h1>
-                <button onClick={() => handleAddToCart(item)} className="bg-[#2e4a40] text-[#02ca3a] p-2 rounded-lg"><FaShoppingCart size={20} /></button>
+                <button
+                  onClick={() => handleAddToCart(item)}
+                  className="bg-[#2e4a40] text-[#02ca3a] p-2 rounded-lg"
+                >
+                  <FaShoppingCart size={20} />
+                </button>
               </div>
               <div className="flex items-center justify-between w-full">
                 <p className="text-[#f5f5f5] text-xl font-bold">
@@ -102,9 +111,7 @@ const getItemCount = (itemId) => itemCounts[itemId] || 0;
                   >
                     &minus;
                   </button>
-                  <span className="text-white">
-                    {getItemCount(item.id)}
-                  </span>
+                  <span className="text-white">{getItemCount(item.id)}</span>
                   <button
                     onClick={() => incrementCount(item.id)}
                     className="text-yellow-500 text-2xl"

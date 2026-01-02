@@ -1,7 +1,7 @@
-const Razorpay = require("razorpay");
-const config = require("../config/config");
-const crypto = require("crypto");
-const Payment = require("../models/paymentModel");
+const Razorpay = require('razorpay');
+const config = require('../config/config');
+const crypto = require('crypto');
+const Payment = require('../models/paymentModel');
 
 const createOrder = async (req, res, next) => {
   const razorpay = new Razorpay({
@@ -13,7 +13,7 @@ const createOrder = async (req, res, next) => {
     const { amount } = req.body;
     const options = {
       amount: amount * 100, // Amount in paisa (1 INR = 100 paisa)
-      currency: "INR",
+      currency: 'INR',
       receipt: `receipt_${Date.now()}`,
     };
 
@@ -31,14 +31,14 @@ const verifyPayment = async (req, res, next) => {
       req.body;
 
     const expectedSignature = crypto
-      .createHmac("sha256", config.razorpaySecretKey)
-      .update(razorpay_order_id + "|" + razorpay_payment_id)
-      .digest("hex");
+      .createHmac('sha256', config.razorpaySecretKey)
+      .update(razorpay_order_id + '|' + razorpay_payment_id)
+      .digest('hex');
 
     if (expectedSignature === razorpay_signature) {
-      res.json({ success: true, message: "Payment verified successfully!" });
+      res.json({ success: true, message: 'Payment verified successfully!' });
     } else {
-      const error = createHttpError(400, "Payment verification failed!");
+      const error = createHttpError(400, 'Payment verification failed!');
       return next(error);
     }
   } catch (error) {
@@ -49,21 +49,21 @@ const verifyPayment = async (req, res, next) => {
 const webHookVerification = async (req, res, next) => {
   try {
     const secret = config.razorpyWebhookSecret;
-    const signature = req.headers["x-razorpay-signature"];
+    const signature = req.headers['x-razorpay-signature'];
 
     const body = JSON.stringify(req.body);
 
     // 🛑 Verify the signature
     const expectedSignature = crypto
-      .createHmac("sha256", secret)
+      .createHmac('sha256', secret)
       .update(body)
-      .digest("hex");
+      .digest('hex');
 
     if (expectedSignature === signature) {
-      console.log("✅ Webhook verified:", req.body);
+      console.log('✅ Webhook verified:', req.body);
 
       // ✅ Process payment (e.g., update DB, send confirmation email)
-      if (req.body.event === "payment.captured") {
+      if (req.body.event === 'payment.captured') {
         const payment = req.body.payload.payment.entity;
         console.log(`💰 Payment Captured: ${payment.amount / 100} INR`);
 
@@ -77,15 +77,15 @@ const webHookVerification = async (req, res, next) => {
           method: payment.method,
           email: payment.email,
           contact: payment.contact,
-          createdAt: new Date(payment.created_at * 1000) 
-        })
+          createdAt: new Date(payment.created_at * 1000),
+        });
 
         await newPayment.save();
       }
 
       res.json({ success: true });
     } else {
-      const error = createHttpError(400, "❌ Invalid Signature!");
+      const error = createHttpError(400, '❌ Invalid Signature!');
       return next(error);
     }
   } catch (error) {

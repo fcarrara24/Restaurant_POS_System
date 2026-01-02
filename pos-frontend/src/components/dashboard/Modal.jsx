@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { IoMdClose } from "react-icons/io";
-import { useMutation } from "@tanstack/react-query";
-import { addTable } from "../../https";
-import { enqueueSnackbar } from "notistack"
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { IoMdClose } from 'react-icons/io';
+import { useMutation } from '@tanstack/react-query';
+import { addTable } from '../../https';
+import { enqueueSnackbar } from 'notistack';
 
 const Modal = ({ setIsTableModalOpen }) => {
   const [tableData, setTableData] = useState({
-    tableNo: "",
-    seats: "",
+    tableNo: '',
+    seats: '',
   });
 
   const handleInputChange = (e) => {
@@ -29,17 +29,16 @@ const Modal = ({ setIsTableModalOpen }) => {
   const tableMutation = useMutation({
     mutationFn: (reqData) => addTable(reqData),
     onSuccess: (res) => {
-        setIsTableModalOpen(false);
-        const { data } = res;
-        enqueueSnackbar(data.message, { variant: "success" })
+      setIsTableModalOpen(false);
+      const { data } = res;
+      enqueueSnackbar(data.message, { variant: 'success' });
     },
     onError: (error) => {
-        const { data } = error.response;
-        enqueueSnackbar(data.message, { variant: "error" })
-        console.log(error);
-    }
-  })
-
+      const { data } = error.response;
+      enqueueSnackbar(data.message, { variant: 'error' });
+      console.log(error);
+    },
+  });
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -47,7 +46,7 @@ const Modal = ({ setIsTableModalOpen }) => {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
         className="bg-[#262626] p-6 rounded-lg shadow-lg w-96"
       >
         {/* Modal Header */}

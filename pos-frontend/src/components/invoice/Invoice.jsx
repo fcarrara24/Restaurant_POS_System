@@ -1,12 +1,12 @@
-import React, { useRef } from "react";
-import { motion } from "framer-motion";
-import { FaCheck } from "react-icons/fa6";
+import React, { useRef } from 'react';
+import { motion } from 'framer-motion';
+import { FaCheck } from 'react-icons/fa6';
 
 const Invoice = ({ orderInfo, setShowInvoice }) => {
   const invoiceRef = useRef(null);
   const handlePrint = () => {
     const printContent = invoiceRef.current.innerHTML;
-    const WinPrint = window.open("", "", "width=900,height=650");
+    const WinPrint = window.open('', '', 'width=900,height=650');
 
     WinPrint.document.write(`
             <html>
@@ -43,7 +43,7 @@ const Invoice = ({ orderInfo, setShowInvoice }) => {
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1.2, opacity: 1 }}
-              transition={{ duration: 0.5, type: "spring", stiffness: 150 }}
+              transition={{ duration: 0.5, type: 'spring', stiffness: 150 }}
               className="w-12 h-12 border-8 border-green-500 rounded-full flex items-center justify-center shadow-lg bg-green-500"
             >
               <motion.span
@@ -64,7 +64,7 @@ const Invoice = ({ orderInfo, setShowInvoice }) => {
 
           <div className="mt-4 border-t pt-4 text-sm text-gray-700">
             <p>
-              <strong>Order ID:</strong>{" "}
+              <strong>Order ID:</strong>{' '}
               {Math.floor(new Date(orderInfo.orderDate).getTime())}
             </p>
             <p>
@@ -115,7 +115,7 @@ const Invoice = ({ orderInfo, setShowInvoice }) => {
           {/* Payment Details */}
 
           <div className="mb-2 mt-2 text-xs">
-            {orderInfo.paymentMethod === "Cash" ? (
+            {orderInfo.paymentMethod === 'Cash' ? (
               <p>
                 <strong>Payment Method:</strong> {orderInfo.paymentMethod}
               </p>
@@ -125,11 +125,11 @@ const Invoice = ({ orderInfo, setShowInvoice }) => {
                   <strong>Payment Method:</strong> {orderInfo.paymentMethod}
                 </p>
                 <p>
-                  <strong>Razorpay Order ID:</strong>{" "}
+                  <strong>Razorpay Order ID:</strong>{' '}
                   {orderInfo.paymentData?.razorpay_order_id}
                 </p>
                 <p>
-                  <strong>Razorpay Payment ID:</strong>{" "}
+                  <strong>Razorpay Payment ID:</strong>{' '}
                   {orderInfo.paymentData?.razorpay_payment_id}
                 </p>
               </>

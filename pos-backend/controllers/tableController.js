@@ -1,18 +1,18 @@
-const Table = require("../models/tableModel");
-const createHttpError = require("http-errors");
-const mongoose = require("mongoose")
+const Table = require('../models/tableModel');
+const createHttpError = require('http-errors');
+const mongoose = require('mongoose');
 
 const addTable = async (req, res, next) => {
   try {
     const { tableNo, seats } = req.body;
     if (!tableNo) {
-      const error = createHttpError(400, "Please provide table No!");
+      const error = createHttpError(400, 'Please provide table No!');
       return next(error);
     }
     const isTablePresent = await Table.findOne({ tableNo });
 
     if (isTablePresent) {
-      const error = createHttpError(400, "Table already exist!");
+      const error = createHttpError(400, 'Table already exist!');
       return next(error);
     }
 
@@ -20,7 +20,7 @@ const addTable = async (req, res, next) => {
     await newTable.save();
     res
       .status(201)
-      .json({ success: true, message: "Table added!", data: newTable });
+      .json({ success: true, message: 'Table added!', data: newTable });
   } catch (error) {
     next(error);
   }
@@ -29,8 +29,8 @@ const addTable = async (req, res, next) => {
 const getTables = async (req, res, next) => {
   try {
     const tables = await Table.find().populate({
-      path: "currentOrder",
-      select: "customerDetails"
+      path: 'currentOrder',
+      select: 'customerDetails',
     });
     res.status(200).json({ success: true, data: tables });
   } catch (error) {
@@ -44,24 +44,25 @@ const updateTable = async (req, res, next) => {
 
     const { id } = req.params;
 
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        const error = createHttpError(404, "Invalid id!");
-        return next(error);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      const error = createHttpError(404, 'Invalid id!');
+      return next(error);
     }
 
     const table = await Table.findByIdAndUpdate(
-        id,
+      id,
       { status, currentOrder: orderId },
-      { new: true }
+      { new: true },
     );
 
     if (!table) {
-      const error = createHttpError(404, "Table not found!");
+      const error = createHttpError(404, 'Table not found!');
       return error;
     }
 
-    res.status(200).json({success: true, message: "Table updated!", data: table});
-
+    res
+      .status(200)
+      .json({ success: true, message: 'Table updated!', data: table });
   } catch (error) {
     next(error);
   }
