@@ -26,6 +26,39 @@ const addTable = async (req, res, next) => {
   }
 };
 
+const removeTable = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    // Check if the table exists
+    const table = await Table.findById(id);
+    if (!table) {
+      return res.status(404).json({
+        success: false,
+        message: 'Table not found'
+      });
+    }
+
+    // Check if the table has active orders
+    if (table.status === 'occupied') {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot delete a table with active orders'
+      });
+    }
+
+    // Delete the table
+    await Table.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Table deleted successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getTables = async (req, res, next) => {
   try {
     const tables = await Table.find().populate({
@@ -68,4 +101,4 @@ const updateTable = async (req, res, next) => {
   }
 };
 
-module.exports = { addTable, getTables, updateTable };
+module.exports = { addTable, getTables, updateTable, removeTable };
