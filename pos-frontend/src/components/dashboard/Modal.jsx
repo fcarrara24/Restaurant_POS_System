@@ -5,31 +5,67 @@ import { useMutation } from '@tanstack/react-query';
 import { addTable } from '../../https';
 import { enqueueSnackbar } from 'notistack';
 
-const Modal = ({ setIsTableModalOpen }) => {
+const Modal = ({ action, onClose }) => {
   const [tableData, setTableData] = useState({
     tableNo: '',
     seats: '',
   });
 
-  const handleInputChange = (e) => {
+  const [categoryData, setCategoryData] = useState({
+    name: '',
+  });
+
+  const [dishData, setDishData] = useState({
+    name: '',
+    price: '',
+    category: '',
+  });
+
+  const handleTableInputChange = (e) => {
     const { name, value } = e.target;
     setTableData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(tableData);
-    tableMutation.mutate(tableData);
+  const handleCategoryInputChange = (e) => {
+    const { name, value } = e.target;
+    setCategoryData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCloseModal = () => {
-    setIsTableModalOpen(false);
+  const handleDishInputChange = (e) => {
+    const { name, value } = e.target;
+    setDishData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (action === 'table') {
+      tableMutation.mutate(tableData);
+      return;
+    }
+
+    if (action === 'category') {
+      enqueueSnackbar('Category creation API not implemented yet.', {
+        variant: 'info',
+      });
+      onClose();
+      return;
+    }
+
+    if (action === 'dishes') {
+      enqueueSnackbar('Dish creation API not implemented yet.', {
+        variant: 'info',
+      });
+      onClose();
+      return;
+    }
+
+    onClose();
   };
 
   const tableMutation = useMutation({
     mutationFn: (reqData) => addTable(reqData),
     onSuccess: (res) => {
-      setIsTableModalOpen(false);
+      onClose();
       const { data } = res;
       enqueueSnackbar(data.message, { variant: 'success' });
     },
@@ -39,6 +75,24 @@ const Modal = ({ setIsTableModalOpen }) => {
       console.log(error);
     },
   });
+
+  const modalTitleTable =
+    action === 'table'
+      ? 'Add Table'
+      : action === 'category'
+        ? 'Add Category'
+        : action === 'dishes'
+          ? 'Add Dish'
+          : 'Add';
+
+  const submitLabel =
+    action === 'table'
+      ? 'Add Table'
+      : action === 'category'
+        ? 'Add Category'
+        : action === 'dishes'
+          ? 'Add Dish'
+          : 'Submit';
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -52,9 +106,9 @@ const Modal = ({ setIsTableModalOpen }) => {
         {/* Modal Header */}
 
         <div className="flex justify-between item-center mb-4">
-          <h2 className="text-[#f5f5f5] text-xl font-semibold">Add Table</h2>
+          <h2 className="text-[#f5f5f5] text-xl font-semibold">{modalTitleTable}</h2>
           <button
-            onClick={handleCloseModal}
+            onClick={onClose}
             className="text-[#f5f5f5] hover:text-red-500"
           >
             <IoMdClose size={24} />
@@ -64,42 +118,116 @@ const Modal = ({ setIsTableModalOpen }) => {
         {/* Modal Body */}
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-10">
-          <div>
-            <label className="block text-[#ababab] mb-2 mt-3 text-sm font-medium">
-              Table Number
-            </label>
-            <div className="flex item-center rounded-lg p-5 px-4 bg-[#1f1f1f]">
-              <input
-                type="number"
-                name="tableNo"
-                value={tableData.tableNo}
-                onChange={handleInputChange}
-                className="bg-transparent flex-1 text-white focus:outline-none"
-                required
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-[#ababab] mb-2 mt-3 text-sm font-medium">
-              Number of Seats
-            </label>
-            <div className="flex item-center rounded-lg p-5 px-4 bg-[#1f1f1f]">
-              <input
-                type="number"
-                name="seats"
-                value={tableData.seats}
-                onChange={handleInputChange}
-                className="bg-transparent flex-1 text-white focus:outline-none"
-                required
-              />
-            </div>
-          </div>
+          {action === 'table' && (
+            <>
+              <div>
+                <label className="block text-[#ababab] mb-2 mt-3 text-sm font-medium">
+                  Table Number
+                </label>
+                <div className="flex item-center rounded-lg p-5 px-4 bg-[#1f1f1f]">
+                  <input
+                    type="number"
+                    name="tableNo"
+                    value={tableData.tableNo}
+                    onChange={handleTableInputChange}
+                    className="bg-transparent flex-1 text-white focus:outline-none"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[#ababab] mb-2 mt-3 text-sm font-medium">
+                  Number of Seats
+                </label>
+                <div className="flex item-center rounded-lg p-5 px-4 bg-[#1f1f1f]">
+                  <input
+                    type="number"
+                    name="seats"
+                    value={tableData.seats}
+                    onChange={handleTableInputChange}
+                    className="bg-transparent flex-1 text-white focus:outline-none"
+                    required
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {action === 'category' && (
+            <>
+              <div>
+                <label className="block text-[#ababab] mb-2 mt-3 text-sm font-medium">
+                  Category Name
+                </label>
+                <div className="flex item-center rounded-lg p-5 px-4 bg-[#1f1f1f]">
+                  <input
+                    type="text"
+                    name="name"
+                    value={categoryData.name}
+                    onChange={handleCategoryInputChange}
+                    className="bg-transparent flex-1 text-white focus:outline-none"
+                    required
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {action === 'dishes' && (
+            <>
+              <div>
+                <label className="block text-[#ababab] mb-2 mt-3 text-sm font-medium">
+                  Dish Name
+                </label>
+                <div className="flex item-center rounded-lg p-5 px-4 bg-[#1f1f1f]">
+                  <input
+                    type="text"
+                    name="name"
+                    value={dishData.name}
+                    onChange={handleDishInputChange}
+                    className="bg-transparent flex-1 text-white focus:outline-none"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[#ababab] mb-2 mt-3 text-sm font-medium">
+                  Price
+                </label>
+                <div className="flex item-center rounded-lg p-5 px-4 bg-[#1f1f1f]">
+                  <input
+                    type="number"
+                    name="price"
+                    value={dishData.price}
+                    onChange={handleDishInputChange}
+                    className="bg-transparent flex-1 text-white focus:outline-none"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[#ababab] mb-2 mt-3 text-sm font-medium">
+                  Category
+                </label>
+                <div className="flex item-center rounded-lg p-5 px-4 bg-[#1f1f1f]">
+                  <input
+                    type="text"
+                    name="category"
+                    value={dishData.category}
+                    onChange={handleDishInputChange}
+                    className="bg-transparent flex-1 text-white focus:outline-none"
+                    required
+                  />
+                </div>
+              </div>
+            </>
+          )}
 
           <button
             type="submit"
             className="w-full rounded-lg mt-10 mb-6 py-3 text-lg bg-yellow-400 text-gray-900 font-bold"
           >
-            Add Table
+            {submitLabel}
           </button>
         </form>
       </motion.div>
