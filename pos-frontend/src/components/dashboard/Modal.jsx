@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { IoMdClose } from 'react-icons/io';
 import { useMutation } from '@tanstack/react-query';
-import { addTable } from '../../https';
+import { addTable, addCategory } from '../../https';
 import { enqueueSnackbar } from 'notistack';
 
 const Modal = ({ action, onClose }) => {
@@ -42,13 +42,16 @@ const Modal = ({ action, onClose }) => {
       tableMutation.mutate(tableData);
       return;
     }
-
+    
     if (action === 'category') {
-      enqueueSnackbar('Category creation API not implemented yet.', {
-        variant: 'info',
-      });
-      onClose();
+      // enqueueSnackbar('Category creation API not implemented yet.', {
+      //   variant: 'info',
+      // });
+      // onClose();
+      e.preventDefault();
+      categoryMutation.mutate(categoryData);
       return;
+      
     }
 
     if (action === 'dishes') {
@@ -76,23 +79,61 @@ const Modal = ({ action, onClose }) => {
     },
   });
 
-  const modalTitleTable =
-    action === 'table'
-      ? 'Add Table'
-      : action === 'category'
-        ? 'Add Category'
-        : action === 'dishes'
-          ? 'Add Dish'
-          : 'Add';
+  const categoryMutation = useMutation({
+    mutationFn: (reqData) => addCategory(reqData),
+    onSuccess: (res) => {
+      onClose();
+      const { data } = res;
+      enqueueSnackbar(data.message, { variant: 'success' });
+    },
+    onError: (error) => {
+      const { data } = error.response;
+      enqueueSnackbar(data.message, { variant: 'error' });
+      console.log(error);
+    },
+  });
 
-  const submitLabel =
-    action === 'table'
-      ? 'Add Table'
-      : action === 'category'
-        ? 'Add Category'
-        : action === 'dishes'
-          ? 'Add Dish'
-          : 'Submit';
+  const dishMutation = useMutation({
+    mutationFn: (reqData) => addDish(reqData),
+    onSuccess: (res) => {
+      onClose();
+      const { data } = res;
+      enqueueSnackbar(data.message, { variant: 'success' });
+    },
+    onError: (error) => {
+      const { data } = error.response;
+      enqueueSnackbar(data.message, { variant: 'error' });
+      console.log(error);
+    },
+  });
+
+
+  const modalTitleTable =
+    (() => {
+      switch (action) {
+        case 'table':
+          return 'Add Table';
+        case 'category':
+          return 'Add Category';
+        case 'dishes':
+          return 'Add Dish';
+        default:
+          return 'Add';
+      }
+    })();
+
+  const submitLabel = (()=> {
+    switch(action) {
+      case 'table':
+        return 'Add Table';
+      case 'category':
+        return 'Add Category';
+      case 'dishes':
+        return 'Add Dish';
+      default:
+        return 'Submit';
+    }
+  })();
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -118,6 +159,7 @@ const Modal = ({ action, onClose }) => {
         {/* Modal Body */}
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-10">
+          {/* HTML table */}
           {action === 'table' && (
             <>
               <div>
@@ -152,7 +194,7 @@ const Modal = ({ action, onClose }) => {
               </div>
             </>
           )}
-
+          {/* HTML category  */}
           {action === 'category' && (
             <>
               <div>
@@ -172,7 +214,7 @@ const Modal = ({ action, onClose }) => {
               </div>
             </>
           )}
-
+          {/* HTML dishes */}
           {action === 'dishes' && (
             <>
               <div>

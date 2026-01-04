@@ -13,6 +13,14 @@ export const addTable = (data) => axiosWrapper.post('/api/table/', data);
 export const getTables = () => axiosWrapper.get('/api/table');
 export const updateTable = ({ tableId, ...tableData }) =>
   axiosWrapper.put(`/api/table/${tableId}`, tableData);
+export const removeTable = (tableId) => axiosWrapper.delete(`/api/table/${tableId}`);
+
+// Category Endpoints 
+export const addCategory = (data) => axiosWrapper.post('/api/category', data);
+export const getCategories = () => axiosWrapper.get('/api/category');
+export const updateCategory = ({ categoryId, ...categoryData }) =>
+  axiosWrapper.put(`/api/category/${categoryId}`, categoryData);
+export const removeCategory = (categoryId) => axiosWrapper.delete(`/api/category/${categoryId}`);
 
 // Payment Endpoints
 export const createOrderRazorpay = (data) =>
