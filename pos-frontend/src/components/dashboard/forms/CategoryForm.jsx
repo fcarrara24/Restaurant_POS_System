@@ -69,7 +69,7 @@ import {
 } from '../../https';
 import { enqueueSnackbar } from 'notistack';
 import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
-import CategoryForm from './CategoryForm';
+
 
 const CategoriesList = () => {
   const queryClient = useQueryClient();

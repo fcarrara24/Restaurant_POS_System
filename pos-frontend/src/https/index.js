@@ -22,6 +22,13 @@ export const updateCategory = ({ categoryId, ...categoryData }) =>
   axiosWrapper.put(`/api/category/${categoryId}`, categoryData);
 export const removeCategory = (categoryId) => axiosWrapper.delete(`/api/category/${categoryId}`);
 
+// Dish Endpoints
+export const addDish = (data) => axiosWrapper.post('/api/dishes', data);
+export const getDishes = () => axiosWrapper.get('/api/dishes');
+export const updateDish = ({ dishId, ...dishData }) =>
+  axiosWrapper.put(`/api/dishes/${dishId}`, dishData);
+export const removeDish = (dishId) => axiosWrapper.delete(`/api/dishes/${dishId}`);
+
 // Payment Endpoints
 export const createOrderRazorpay = (data) =>
   axiosWrapper.post('/api/payment/create-order', data);
