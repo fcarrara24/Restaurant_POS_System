@@ -21,6 +21,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.5",
     "mongose": "^0.0.2-security",
+    "multer": "^2.0.2",
     "razorpay": "^2.9.5"
   },
   "devDependencies": {

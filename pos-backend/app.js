@@ -30,6 +30,7 @@ app.use('/api/order', require('./routes/orderRoute'));
 app.use('/api/table', require('./routes/tableRoute'));
 app.use('/api/payment', require('./routes/paymentRoute'));
 app.use('/api/category', require('./routes/categoryRoute'));
+app.use('/api/dishes', require('./routes/dishRoutes'));
 
 // Global Error Handler
 app.use(globalErrorHandler);
