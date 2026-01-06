@@ -23,7 +23,14 @@ export const updateCategory = ({ categoryId, ...categoryData }) =>
 export const removeCategory = (categoryId) => axiosWrapper.delete(`/api/category/${categoryId}`);
 
 // Dish Endpoints
-export const addDish = (data) => axiosWrapper.post('/api/dishes', data);
+// export const addDish = (data) => axiosWrapper.post('/api/dishes', data);
+// In src/https/index.js
+export const addDish = (formData) => 
+  axiosWrapper.post('/api/dishes', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
 export const getDishes = () => axiosWrapper.get('/api/dishes');
 export const updateDish = ({ dishId, ...dishData }) =>
   axiosWrapper.put(`/api/dishes/${dishId}`, dishData);

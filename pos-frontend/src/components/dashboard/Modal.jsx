@@ -66,9 +66,10 @@ const Modal = ({ action, onClose }) => {
       };
       reader.readAsDataURL(file);
       
+      // Store the actual File object, not just the preview
       setDishData(prev => ({
         ...prev,
-        image: file
+        image: file  // Store the File object directly
       }));
     }
   };
@@ -98,8 +99,24 @@ const Modal = ({ action, onClose }) => {
       formData.append('category', dishData.category);
       formData.append('description', dishData.description);
       formData.append('isAvailable', dishData.isAvailable);
-      if (dishData.image) {
+      // if (dishData.image) {
+      //   formData.append('image', dishData.image);
+      // }
+      // Make sure dishData.image is a File object
+      if (dishData.image instanceof File) {
         formData.append('image', dishData.image);
+      } else if (typeof dishData.image === 'string') {
+        // If it's a string (base64), we need to convert it to a File object
+        const byteString = atob(dishData.image.split(',')[1]);
+        const mimeString = dishData.image.split(',')[0].split(':')[1].split(';')[0];
+        const ab = new ArrayBuffer(byteString.length);
+        const ia = new Uint8Array(ab);
+        for (let i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i);
+        }
+        const blob = new Blob([ab], { type: mimeString });
+        const file = new File([blob], 'dish-image.jpg', { type: mimeString });
+        formData.append('image', file);
       }
       
       dishMutation.mutate(formData);
