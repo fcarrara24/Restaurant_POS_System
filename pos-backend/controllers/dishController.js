@@ -225,11 +225,76 @@ const getDishImage = async (req, res, next) => {
   }
 };
 
+// const getPopularDishes = async (req, res) => {
+//   try {
+//     const popularDishes = await Dish.aggregate([
+//       { $match: { isAvailable: true } },
+//       { $sample: { size: 10 } }, // Get 10 random available dishes
+//       { 
+//         $project: {
+//           _id: 1,
+//           name: 1,
+//           price: 1,
+//           description: 1,
+//           'image.contentType': 1,
+//           numberOfOrders: { $ifNull: ['$numberOfOrders', 0] } // Default to 0 if not set
+//         }
+//       }
+//     ]);
+//     res.status(200).json({
+//       status: 'success',
+//       results: popularDishes.length,
+//       data: {
+//         dishes: popularDishes
+//       }
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       status: 'error',
+//       message: error.message
+//     });
+//   }
+// };
+const getPopularDishes = async (req, res) => {
+  try {
+    const popularDishes = await Dish.aggregate([
+      { $match: { isAvailable: true } },
+      { $sample: { size: 10 } }, // Get 10 random available dishes
+      { 
+        $project: {
+          _id: 1,
+          name: 1,
+          price: 1,
+          description: 1,
+          'image.contentType': 1,
+          'image.data': 1, // Include image data
+          numberOfOrders: { $ifNull: ['$numberOfOrders', 0] }
+        }
+      }
+    ]);
+    
+    res.status(200).json({
+      status: 'success',
+      results: popularDishes.length,
+      data: {
+        dishes: popularDishes
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching popular dishes:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to fetch popular dishes'
+    });
+  }
+};
+
 module.exports = {
   createDish,
   getDishes,
   getDish,
   updateDish,
   deleteDish,
-  getDishImage
+  getDishImage, 
+  getPopularDishes
 };

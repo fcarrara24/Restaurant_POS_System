@@ -35,6 +35,7 @@ export const getDishes = () => axiosWrapper.get('/api/dishes');
 export const updateDish = ({ dishId, ...dishData }) =>
   axiosWrapper.put(`/api/dishes/${dishId}`, dishData);
 export const removeDish = (dishId) => axiosWrapper.delete(`/api/dishes/${dishId}`);
+export const popularDishes = () => axiosWrapper.get('/api/dishes/popular');
 
 // Payment Endpoints
 export const createOrderRazorpay = (data) =>

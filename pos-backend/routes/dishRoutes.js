@@ -5,7 +5,8 @@ const {
   getDish,
   updateDish,
   deleteDish,
-  getDishImage
+  getDishImage, 
+  getPopularDishes
 } = require('../controllers/dishController');
 const { isVerifiedUser } = require('../middlewares/tokenVerification');
 const upload = require('../middlewares/upload');
@@ -15,10 +16,14 @@ const router = express.Router();
 // At the top of dishRoutes.js, add this import
 const Dish = require('../models/dishModel');
 
-// 8000/api/dishes - READ all dishes
+// 8000/api/dishes - READ all dishes and CREATE a dish
 router.route('/')
-  .get(getDishes) // restituisce tutti i piatti
+  .get(getDishes)
   .post(isVerifiedUser, upload.single('image'), createDish);
+
+// 8000/api/dishes/popular - GET popular dishes
+router.route('/popular')
+  .get(getPopularDishes);
 
 // 8000/api/dishes/:id - READ, UPDATE, DELETE a specific dish
 router.route('/:id')
@@ -29,37 +34,6 @@ router.route('/:id')
 // 8000/api/dishes/:id/image - GET dish image
 router.route('/:id/image')
   .get(getDishImage);
-
-// In dishRoutes.js, update the test endpoint
-// router.get('/:id/image-test', async (req, res) => {
-//   try {
-//     const dish = await getDish(req);
-    
-//     if (!dish || !dish.image || !dish.image.data) {
-//       return res.status(404).send('Image not found');
-//     }
-    
-//     // Convert the Buffer to base64
-//     const base64Image = dish.image.data.toString('base64');
-    
-//     // Create a data URL
-//     const imageDataUrl = `data:${dish.image.contentType};base64,${base64Image}`;
-    
-//     // Send the data URL in the response
-//     res.json({
-//       success: true,
-//       data: {
-//         contentType: dish.image.contentType,
-//         size: dish.image.size,
-//         filename: dish.image.filename,
-//         imageData: imageDataUrl
-//       }
-//     });
-//   } catch (error) {
-//     console.error('Error fetching image:', error);
-//     res.status(500).send('Error fetching image');
-//   }
-// });
 
 // In dishRoutes.js, update the test endpoint
 // Simple test endpoint to verify image storage
