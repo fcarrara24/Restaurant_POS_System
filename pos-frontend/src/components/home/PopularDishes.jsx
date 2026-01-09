@@ -1,12 +1,13 @@
-import { popularDishes } from '../../https/index.js';
-import { useQuery } from '@tanstack/react-query';
+import { popularDishes } from "../../https/index.js";
+import { useQuery } from "@tanstack/react-query";
 
 const PopularDishes = () => {
-  const { data: response, isLoading, isError } = useQuery({
-    queryKey: ['popularDishes'],
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["popularDishes"],
     queryFn: popularDishes,
-    select: (res) => res?.data?.dishes || []
   });
+
+  const dishes = data?.data?.data?.dishes ?? [];
 
   if (isLoading) {
     return <div className="text-white">Loading popular dishes...</div>;
@@ -29,7 +30,7 @@ const PopularDishes = () => {
         </div>
 
         <div className="overflow-y-scroll h-[680px] scrollbar-hide">
-          {response?.map((dish, index) => (
+          {dishes?.map((dish, index) => (
             <div
               key={dish._id || index}
               className="flex items-center gap-4 bg-[#1f1f1f] rounded-[15px] px-6 py-4 mt-4 mx-6"
@@ -39,7 +40,9 @@ const PopularDishes = () => {
               </h1>
               {dish.image?.data ? (
                 <img
-                  src={`data:${dish.image.contentType};base64,${dish.image.data.toString('base64')}`}
+                  src={`data:${
+                    dish.image.contentType
+                  };base64,${dish.image.data.toString("base64")}`}
                   alt={dish.name}
                   className="w-[50px] h-[50px] rounded-full object-cover"
                 />
