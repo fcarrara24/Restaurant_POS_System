@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 // @access  Private/Admin
 const createCategory = async (req, res, next) => {
   try {
-    const { name } = req.body;
+    const { name, description } = req.body;
 
     if (!name) {
       throw createHttpError(400, 'Category name is required');
@@ -23,7 +23,10 @@ const createCategory = async (req, res, next) => {
       throw createHttpError(400, 'Category already exists');
     }
 
-    const category = await Category.create({ name });
+    const category = await Category.create({ 
+      name,
+      description: description || ''
+    });
     
     res.status(201).json({
       success: true,
@@ -35,12 +38,30 @@ const createCategory = async (req, res, next) => {
   }
 };
 
-// @desc    Get all categories
+// @desc    Get active categories
 // @route   GET /api/categories
 // @access  Public
 const getCategories = async (req, res, next) => {
   try {
+    const categories = await Category.find({ isActive: true }).sort({ name: 1 });
+    
+    res.status(200).json({
+      success: true,
+      count: categories.length,
+      data: categories
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get all categories (including inactive)
+// @route   GET /api/categories/all
+// @access  Private/Admin
+const getAllCategories = async (req, res, next) => {
+  try {
     const categories = await Category.find().sort({ name: 1 });
+    
     res.status(200).json({
       success: true,
       count: categories.length,
@@ -57,29 +78,38 @@ const getCategories = async (req, res, next) => {
 const updateCategory = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name } = req.body;
+    const { name, description, isActive } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw createHttpError(400, 'Invalid category ID');
     }
 
-    if (!name) {
-      throw createHttpError(400, 'Category name is required');
+    const updateData = {};
+    
+    if (name !== undefined) {
+      // Check if another category with the same name exists (case-insensitive)
+      const categoryExists = await Category.findOne({
+        _id: { $ne: id },
+        name: { $regex: new RegExp(`^${name}$`, 'i') }
+      });
+
+      if (categoryExists) {
+        throw createHttpError(400, 'Category with this name already exists');
+      }
+      updateData.name = name;
     }
 
-    // Check if new name already exists (case-insensitive)
-    const categoryExists = await Category.findOne({ 
-      _id: { $ne: id }, // Exclude current category
-      name: { $regex: new RegExp(`^${name}$`, 'i') } 
-    });
+    if (description !== undefined) {
+      updateData.description = description;
+    }
 
-    if (categoryExists) {
-      throw createHttpError(400, 'Category with this name already exists');
+    if (isActive !== undefined) {
+      updateData.isActive = isActive;
     }
 
     const category = await Category.findByIdAndUpdate(
       id,
-      { name },
+      updateData,
       { new: true, runValidators: true }
     );
 
@@ -97,7 +127,7 @@ const updateCategory = async (req, res, next) => {
   }
 };
 
-// @desc    Delete a category
+// @desc    Delete a category (soft delete)
 // @route   DELETE /api/categories/:id
 // @access  Private/Admin
 const deleteCategory = async (req, res, next) => {
@@ -108,23 +138,37 @@ const deleteCategory = async (req, res, next) => {
       throw createHttpError(400, 'Invalid category ID');
     }
 
-    // Check if category exists
-    const category = await Category.findById(id);
+    // Check if any active dishes are using this category
+    const activeDishesUsingCategory = await Dish.findOne({ 
+      category: id,
+      isAvailable: true 
+    });
+    
+    if (activeDishesUsingCategory) {
+      throw createHttpError(400, 'Cannot deactivate category that is being used by active dishes');
+    }
+
+    // Soft delete by setting isActive to false
+    const category = await Category.findByIdAndUpdate(
+      id,
+      { isActive: false },
+      { new: true }
+    );
+
     if (!category) {
       throw createHttpError(404, 'Category not found');
     }
 
-    // Check if any dishes are using this category
-    const dishesWithCategory = await Dish.findOne({ category: id });
-    if (dishesWithCategory) {
-      throw createHttpError(400, 'Cannot delete category that is in use by dishes');
-    }
-
-    await Category.findByIdAndDelete(id);
+    // Set all dishes in this category as unavailable
+    await Dish.updateMany(
+      { category: id },
+      { isAvailable: false }
+    );
 
     res.status(200).json({
       success: true,
-      message: 'Category deleted successfully'
+      data: category,
+      message: 'Category deactivated successfully. All associated dishes have been marked as unavailable.'
     });
 
   } catch (error) {
@@ -135,6 +179,7 @@ const deleteCategory = async (req, res, next) => {
 module.exports = {
   createCategory,
   getCategories,
+  getAllCategories,
   updateCategory,
   deleteCategory
 };

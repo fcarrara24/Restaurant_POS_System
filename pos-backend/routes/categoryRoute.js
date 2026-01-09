@@ -2,15 +2,24 @@ const express = require('express');
 const {
   createCategory,
   getCategories,
+  getAllCategories,
   updateCategory,
   deleteCategory
 } = require('../controllers/categoryController');
 const router = express.Router();
-const { isVerifiedUser } = require('../middlewares/tokenVerification');
+const { isVerifiedUser, isAdmin } = require('../middlewares/tokenVerification');
 
-router.route('/').post(isVerifiedUser, createCategory);
-router.route('/').get(getCategories);
-router.route('/:id').put(isVerifiedUser, updateCategory);
-router.route('/:id').delete(isVerifiedUser, deleteCategory);
+// Public routes
+router.get('/', getCategories);
+
+// Protected routes (require authentication)
+router.use(isVerifiedUser);
+
+// Admin-only routes
+router.get('/all', getAllCategories);
+router.post('/', isAdmin, createCategory);
+router.route('/:id')
+  .put(isAdmin, updateCategory)
+  .delete(isAdmin, deleteCategory);
 
 module.exports = router;

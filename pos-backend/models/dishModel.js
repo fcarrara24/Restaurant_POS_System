@@ -7,6 +7,10 @@ const dishSchema = new mongoose.Schema({
     trim: true,
     unique: true
   },
+  description: {
+    type: String,
+    trim: true
+  },
   price: {
     type: Number,
     required: [true, 'Price is required'],
@@ -15,12 +19,22 @@ const dishSchema = new mongoose.Schema({
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
+    required: [true, 'Category is required'],
     index: true
+  },
+  isAvailable: {
+    type: Boolean,
+    default: true
+  },
+  numberOfOrders: {
+    type: Number,
+    default: 0,
+    min: 0
   },
   image: {
     data: {
       type: Buffer,
-      default: Buffer.alloc(0)  // Buffer vuoto invece di null
+      default: Buffer.alloc(0)
     },
     contentType: {
       type: String,

@@ -1,1 +1,0 @@
-fix the popular dishes preview to work accordingly to /api/dishes/popular format
