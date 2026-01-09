@@ -1,7 +1,22 @@
-import React from 'react';
-import { popularDishes } from '../../constants';
+import { popularDishes } from "../../https/index.js";
+import { useQuery } from "@tanstack/react-query";
 
 const PopularDishes = () => {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["popularDishes"],
+    queryFn: popularDishes,
+  });
+
+  const dishes = data?.data?.data?.dishes ?? [];
+
+  if (isLoading) {
+    return <div className="text-white">Loading popular dishes...</div>;
+  }
+
+  if (isError) {
+    return <div className="text-red-500">Error loading popular dishes</div>;
+  }
+
   return (
     <div className="mt-6 pr-6">
       <div className="bg-[#1a1a1a] w-full rounded-lg">
@@ -15,32 +30,38 @@ const PopularDishes = () => {
         </div>
 
         <div className="overflow-y-scroll h-[680px] scrollbar-hide">
-          {popularDishes.map((dish) => {
-            return (
-              <div
-                key={dish.id}
-                className="flex items-center gap-4 bg-[#1f1f1f] rounded-[15px] px-6 py-4 mt-4 mx-6"
-              >
-                <h1 className="text-[#f5f5f5] font-bold text-xl mr-4">
-                  {dish.id < 10 ? `0${dish.id}` : dish.id}
-                </h1>
+          {dishes?.map((dish, index) => (
+            <div
+              key={dish._id || index}
+              className="flex items-center gap-4 bg-[#1f1f1f] rounded-[15px] px-6 py-4 mt-4 mx-6"
+            >
+              <h1 className="text-[#f5f5f5] font-bold text-xl mr-4">
+                {index < 9 ? `0${index + 1}` : index + 1}
+              </h1>
+              {dish.image?.data ? (
                 <img
-                  src={dish.image}
+                  src={`data:${
+                    dish.image.contentType
+                  };base64,${dish.image.data.toString("base64")}`}
                   alt={dish.name}
-                  className="w-[50px] h-[50px] rounded-full"
+                  className="w-[50px] h-[50px] rounded-full object-cover"
                 />
-                <div>
-                  <h1 className="text-[#f5f5f5] font-semibold tracking-wide">
-                    {dish.name}
-                  </h1>
-                  <p className="text-[#f5f5f5] text-sm font-semibold mt-1">
-                    <span className="text-[#ababab]">Orders: </span>
-                    {dish.numberOfOrders}
-                  </p>
+              ) : (
+                <div className="w-[50px] h-[50px] rounded-full bg-gray-700 flex items-center justify-center">
+                  <span className="text-2xl">🍽️</span>
                 </div>
+              )}
+              <div>
+                <h1 className="text-[#f5f5f5] font-semibold tracking-wide">
+                  {dish.name}
+                </h1>
+                <p className="text-[#f5f5f5] text-sm font-semibold mt-1">
+                  <span className="text-[#ababab]">Orders: </span>
+                  {dish.numberOfOrders || 0}
+                </p>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
     </div>
