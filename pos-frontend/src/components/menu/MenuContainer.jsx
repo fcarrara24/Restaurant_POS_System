@@ -16,6 +16,8 @@ const MenuContainer = () => {
   const [itemCounts, setItemCounts] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+const [dishCounts, setDishCounts] = useState({}); // Add this with other state declarations
+
   const dispatch = useDispatch();
 
   // Log component mount and state changes
@@ -45,24 +47,40 @@ const MenuContainer = () => {
       console.log('Fetching categories...');
       try {
         setLoading(true);
-        // In the fetchCategories function:
         const response = await getAllCategories();
         console.log('Categories API response:', response);
-        // Handle different response structures
+        
         let categoriesData = [];
-        if (response) {
-          if (Array.isArray(response.data)) {
-            categoriesData = response.data;
-          } else if (response.data && Array.isArray(response.data.data)) {
-            categoriesData = response.data.data;
-          }
+        if (response && response.data) {
+          categoriesData = Array.isArray(response.data) ? response.data : 
+                        (response.data.data || []);
         }
-        console.log('Setting categories:', categoriesData);
-        setCategories(categoriesData);
-        // Select first category by default if available
-        if (categoriesData.length > 0) {
-          console.log('Setting initial selected category:', categoriesData[0].name);
-          setSelectedCategory(categoriesData[0]);
+
+        // Add dish counts to each category
+        const categoriesWithCounts = await Promise.all(
+          categoriesData.map(async (category) => {
+            try {
+              const dishesResponse = await axios.get(`/api/dishes?category=${category._id}&limit=1`);
+              return {
+                ...category,
+                dishCount: dishesResponse.data?.total || 0
+              };
+            } catch (error) {
+              console.error(`Error fetching dishes for category ${category._id}:`, error);
+              return {
+                ...category,
+                dishCount: 0
+              };
+            }
+          })
+        );
+
+        console.log('Setting categories with counts:', categoriesWithCounts);
+        setCategories(categoriesWithCounts);
+        
+        if (categoriesWithCounts.length > 0) {
+          console.log('Setting initial selected category:', categoriesWithCounts[0].name);
+          setSelectedCategory(categoriesWithCounts[0]);
         } else {
           console.warn('No categories found in response');
           setError('No categories available');
@@ -223,7 +241,7 @@ const MenuContainer = () => {
                 )}
               </div>
               <p className="text-[#ababab] text-sm font-semibold">
-                {dishes.length} Items
+                {category.dishCount} {category.dishCount === 1 ? 'Item' : 'Items'}
               </p>
             </div>
           );
