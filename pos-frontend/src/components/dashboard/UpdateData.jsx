@@ -6,9 +6,11 @@ import {
   getDishes, removeDish, updateDish 
 } from '../../https';
 import { enqueueSnackbar } from 'notistack';
-import { FaEdit, FaTrash, FaSave, FaTimes, FaTable, FaUtensils, FaList, FaLock } from 'react-icons/fa';
-import { motion } from 'framer-motion';
+import { FaTable, FaUtensils, FaList } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
+import TabNavigation from './components/TabNavigation';
+import DataTable from './components/DataTable';
+import NoAccess from './components/NoAccess';
 
 const UpdateData = () => {
   // State hooks - always called in the same order
@@ -102,28 +104,14 @@ const UpdateData = () => {
     },
   });
 
-  // Admin check - moved after all hooks
+  // Admin check
   if (!isAdmin) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 w-full max-w-2xl">
-          <div className="flex items-center">
-            <FaLock className="mr-2" />
-            <div>
-              <h3 className="font-bold">Access Denied</h3>
-              <p>You don't have admin privileges to access this section.</p>
-              <p className="text-sm mt-2">
-                Please contact your administrator if you believe this is a mistake.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <NoAccess />;
   }
 
-  const renderTable = () => {
+  const getTableData = () => {
     let data = [];
+    let columns = [];
     let isLoading = false;
     let error = null;
 
@@ -132,8 +120,8 @@ const UpdateData = () => {
       data = tables?.data?.tables || [];
       isLoading = !tables && activeTab === 'tables';
       error = tables?.error;
+      columns = ['Table No', 'Seats', 'Status'];
       
-      // Filter tables based on search term
       if (searchTerm) {
         data = data.filter(table => 
           String(table.tableNo).toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -144,8 +132,8 @@ const UpdateData = () => {
       data = categories?.data?.categories || [];
       isLoading = !categories && activeTab === 'categories';
       error = categories?.error;
+      columns = ['Name', 'Dish Count'];
       
-      // Filter categories based on search term
       if (searchTerm) {
         data = data.filter(category => 
           category.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -155,8 +143,8 @@ const UpdateData = () => {
       data = dishes?.data?.dishes || [];
       isLoading = !dishes && activeTab === 'dishes';
       error = dishes?.error;
+      columns = ['Name', 'Price', 'Category', 'Status'];
       
-      // Filter dishes based on search term
       if (searchTerm) {
         data = data.filter(dish => 
           dish.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -165,16 +153,77 @@ const UpdateData = () => {
       }
     }
 
-    if (isLoading) {
-      return (
+    return { data, columns, isLoading, error };
+  };
+
+  const renderCellContent = (item, column, tab) => {
+    switch (tab) {
+      case 'tables':
+        if (column === 'Table No') return item.tableNo;
+        if (column === 'Seats') return item.seats;
+        if (column === 'Status') {
+          return (
+            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+              item.isOccupied 
+                ? 'bg-green-100 text-green-800' 
+                : 'bg-red-100 text-red-800'
+            }`}>
+              {item.isOccupied ? 'Occupied' : 'Available'}
+            </span>
+          );
+        }
+        break;
+      
+      case 'categories':
+        if (column === 'Name') return item.name;
+        if (column === 'Dish Count') return `${item.dishCount || 0} dishes`;
+        break;
+      
+      case 'dishes':
+        if (column === 'Name') return item.name;
+        if (column === 'Price') return `$${item.price?.toFixed(2)}`;
+        if (column === 'Category') return item.category?.name || 'Uncategorized';
+        if (column === 'Status') {
+          return (
+            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+              item.isAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+            }`}>
+              {item.isAvailable ? 'Available' : 'Unavailable'}
+            </span>
+          );
+        }
+        break;
+      
+      default:
+        return item[column.toLowerCase()] || '';
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditData(prev => ({
+      ...prev,
+      [name]: name === 'price' || name === 'seats' || name === 'tableNo' 
+        ? Number(value) 
+        : value
+    }));
+  };
+
+  const { data, columns, isLoading, error } = getTableData();
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
         </div>
-      );
-    }
+      </div>
+    );
+  }
 
-    if (error) {
-      return (
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
         <div className="bg-red-900/20 border border-red-500 text-red-300 px-4 py-3 rounded-lg text-center">
           <p>Error loading {activeTab}. Please try again later.</p>
           <button 
@@ -184,268 +233,29 @@ const UpdateData = () => {
             Retry
           </button>
         </div>
-      );
-    }
-
-    if (!Array.isArray(data) || data.length === 0) {
-      return (
-        <div className="text-center py-12">
-          <p className="text-gray-400 text-lg mb-2">
-            No {activeTab} found{searchTerm ? ` matching "${searchTerm}"` : ''}
-          </p>
-          {searchTerm && (
-            <button 
-              onClick={() => setSearchTerm('')}
-              className="text-yellow-400 hover:text-yellow-300 text-sm"
-            >
-              Clear search
-            </button>
-          )}
-        </div>
-      );
-    }
-
-    const columns = activeTab === 'tables' ? ['Table No', 'Seats', 'Status'] :
-                   activeTab === 'categories' ? ['Name', 'Dish Count'] :
-                   ['Name', 'Price', 'Category', 'Status'];
-
-    return (
-      <div className="overflow-x-auto rounded-lg border border-gray-700">
-        <table className="min-w-full divide-y divide-gray-700">
-          <thead className="bg-[#262626]">
-            <tr>
-              {columns.map((col, index) => (
-                <th 
-                  key={col} 
-                  className={`px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider ${
-                    index === 0 ? 'rounded-tl-lg' : ''
-                  } ${index === columns.length - 1 ? 'rounded-tr-lg' : ''}`}
-                >
-                  {col}
-                </th>
-              ))}
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider rounded-tr-lg">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-[#1f1f1f] divide-y divide-gray-800">
-            {data.map((item, index) => (
-              <motion.tr 
-                key={item._id} 
-                className="hover:bg-[#2a2a2a] transition-colors"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-              >
-                {activeTab === 'tables' ? (
-                  <>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {editingId === item._id ? (
-                        <input
-                          type="number"
-                          name="tableNo"
-                          value={editData.tableNo || ''}
-                          onChange={handleInputChange}
-                          className="bg-[#333] text-white px-3 py-1.5 rounded-md w-24 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-                          min="1"
-                        />
-                      ) : (
-                        item.tableNo
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {editingId === item._id ? (
-                        <input
-                          type="number"
-                          name="seats"
-                          value={editData.seats || ''}
-                          onChange={handleInputChange}
-                          className="bg-[#333] text-white px-3 py-1.5 rounded-md w-20 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-                          min="1"
-                        />
-                      ) : (
-                        item.seats
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {item.isOccupied ? 'Occupied' : 'Available'}
-                    </td>
-                  </>
-                ) : activeTab === 'categories' ? (
-                  <>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {editingId === item._id ? (
-                        <input
-                          type="text"
-                          name="name"
-                          value={editData.name || ''}
-                          onChange={handleInputChange}
-                          className="bg-[#333] text-white px-3 py-1.5 rounded-md w-full focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-                        />
-                      ) : (
-                        item.name
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {item.dishCount || 0}
-                    </td>
-                  </>
-                ) : (
-                  <>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {editingId === item._id ? (
-                        <input
-                          type="text"
-                          name="name"
-                          value={editData.name || ''}
-                          onChange={handleInputChange}
-                          className="bg-[#333] text-white px-3 py-1.5 rounded-md w-full focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-                        />
-                      ) : (
-                        item.name
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {editingId === item._id ? (
-                        <div className="relative">
-                          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-                          <input
-                            type="number"
-                            name="price"
-                            value={editData.price || ''}
-                            onChange={handleInputChange}
-                            className="bg-[#333] text-white pl-8 pr-3 py-1.5 rounded-md w-32 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-                            min="0"
-                            step="0.01"
-                          />
-                        </div>
-                      ) : (
-                        `$${item.price}`
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {editingId === item._id ? (
-                        <select
-                          name="category"
-                          value={editData.category?._id || ''}
-                          onChange={handleInputChange}
-                          className="bg-[#333] text-white px-3 py-1.5 rounded-md w-full focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-                        >
-                          {categories?.map(cat => (
-                            <option key={cat._id} value={cat._id}>
-                              {cat.name}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        item.category?.name || 'Uncategorized'
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {editingId === item._id ? (
-                        <label className="inline-flex items-center cursor-pointer">
-                          <div className="relative">
-                            <input
-                              type="checkbox"
-                              name="isAvailable"
-                              checked={editData.isAvailable || false}
-                              onChange={handleInputChange}
-                              className="sr-only peer"
-                            />
-                            <div className="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
-                          </div>
-                        </label>
-                      ) : (
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          item.isAvailable 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-red-100 text-red-800'
-                        }`}>
-                          {item.isAvailable ? 'Available' : 'Unavailable'}
-                        </span>
-                      )}
-                    </td>
-                  </>
-                )}
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  {editingId === item._id ? (
-                    <div className="flex justify-end space-x-2">
-                      <button
-                        onClick={() => handleUpdate(activeTab.slice(0, -1))}
-                        className="p-1.5 text-green-500 hover:bg-green-900/30 rounded-full transition-colors"
-                        disabled={updateMutation.isLoading}
-                        title="Save changes"
-                      >
-                        <FaSave className="h-5 w-5" />
-                      </button>
-                      <button
-                        onClick={handleCancel}
-                        className="p-1.5 text-gray-400 hover:bg-gray-700/50 rounded-full transition-colors"
-                        title="Cancel editing"
-                      >
-                        <FaTimes className="h-5 w-5" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex justify-end space-x-3">
-                      <button
-                        onClick={() => handleEdit(item, activeTab.slice(0, -1))}
-                        className="p-1.5 text-yellow-400 hover:bg-yellow-900/30 rounded-full transition-colors"
-                        title="Edit"
-                      >
-                        <FaEdit className="h-5 w-5" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(activeTab.slice(0, -1), item._id)}
-                        className="p-1.5 text-red-500 hover:bg-red-900/30 rounded-full transition-colors"
-                        disabled={deleteMutation.isLoading}
-                        title="Delete"
-                      >
-                        <FaTrash className="h-5 w-5" />
-                      </button>
-                    </div>
-                  )}
-                </td>
-              </motion.tr>
-            ))}
-          </tbody>
-        </table>
       </div>
     );
-  };
+  }
 
   return (
-    <div className="bg-[#1a1a1a] rounded-lg p-6 h-full">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div className="flex space-x-1 p-1 bg-[#262626] rounded-lg">
-          {tabConfig.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => {
-                setActiveTab(tab.id);
-                setEditingId(null);
-                setSearchTerm('');
-              }}
-              className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-all ${
-                activeTab === tab.id
-                  ? 'bg-yellow-500 text-gray-900 shadow-md'
-                  : 'text-gray-400 hover:bg-[#333] hover:text-white'
-              }`}
-            >
-              {tab.icon}
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        
-        <div className="relative w-full md:w-64">
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold text-white mb-6">Manage {activeTab}</h1>
+      
+      <TabNavigation 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        tabConfig={tabConfig} 
+      />
+
+      {/* Search and Add New */}
+      <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+        <div className="relative w-full sm:w-64">
           <input
             type="text"
             placeholder={`Search ${activeTab}...`}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[#262626] text-white px-4 py-2 pl-10 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            className="w-full px-4 py-2 pl-10 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
           />
           <svg
             className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
@@ -462,15 +272,31 @@ const UpdateData = () => {
             />
           </svg>
         </div>
+        <button
+          onClick={() => {
+            setEditingId('new');
+            setEditData({});
+          }}
+          className="w-full sm:w-auto px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center"
+        >
+          <span>Add New {activeTab.slice(0, -1)}</span>
+        </button>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-[#1f1f1f] rounded-xl p-4 shadow-lg"
-      >
-        {renderTable()}
-      </motion.div>
+      {/* Table */}
+      <DataTable 
+        data={data}
+        columns={columns}
+        activeTab={activeTab}
+        editingId={editingId}
+        editData={editData}
+        setEditData={setEditData}
+        handleEdit={handleEdit}
+        handleSave={handleSave}
+        handleDelete={handleDelete}
+        handleCancel={handleCancel}
+        renderCellContent={renderCellContent}
+      />
     </div>
   );
 };
