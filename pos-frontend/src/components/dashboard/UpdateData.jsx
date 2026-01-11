@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   getTables, removeTable, updateTable,
@@ -11,78 +11,46 @@ import { motion } from 'framer-motion';
 import { useSelector } from 'react-redux';
 
 const UpdateData = () => {
+  // State hooks - always called in the same order
   const [activeTab, setActiveTab] = useState('tables');
   const [editingId, setEditingId] = useState(null);
   const [editData, setEditData] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const queryClient = useQueryClient();
-  const role = useSelector((state) => {
-    return state?.user?.role || '';  // Return the role string directly
-  });
+  
+  // Get role from Redux
+  const role = useSelector((state) => state?.user?.role || '');
+  
+  // Set admin status
   useEffect(() => {
-    // Check if user is admin when component mounts or role changes
-    setIsAdmin(role == 'Admin');
+    setIsAdmin(role === 'Admin');
   }, [role]);
 
-  const tabConfig = [
+  // Memoize tab config to prevent unnecessary re-renders
+  const tabConfig = useMemo(() => [
     { id: 'tables', label: 'Tables', icon: <FaTable className="mr-2" /> },
     { id: 'categories', label: 'Categories', icon: <FaList className="mr-2" /> },
     { id: 'dishes', label: 'Dishes', icon: <FaUtensils className="mr-2" /> },
-  ];
+  ], []);
 
-  // Show unauthorized message if user is not admin
-  if (!isAdmin) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 w-full max-w-2xl">
-          <div className="flex items-center">
-            <FaLock className="mr-2" />
-            <div>
-              <h3 className="font-bold">Access Denied</h3>
-              <p>You don't have admin privileges to access this section.</p>
-              <p className="text-sm mt-2">
-                Please contact your administrator if you believe this is a mistake.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Fetch data based on active tab
-  const { data: tables, error: tablesError } = useQuery({
+  // Data fetching hooks - using enabled option for conditional fetching
+  const { data: tables } = useQuery({
     queryKey: ['tables'],
     queryFn: getTables,
-    enabled: activeTab === 'tables' && isAdmin,
-    onError: (error) => {
-      if (error?.response?.status === 403) {
-        enqueueSnackbar('Admin access required', { variant: 'error' });
-      }
-    },
+    enabled: isAdmin && activeTab === 'tables',
   });
 
-  const { data: categories, error: categoriesError } = useQuery({
+  const { data: categories } = useQuery({
     queryKey: ['categories'],
     queryFn: getCategories,
-    enabled: activeTab === 'categories' && isAdmin,
-    onError: (error) => {
-      if (error?.response?.status === 403) {
-        enqueueSnackbar('Admin access required', { variant: 'error' });
-      }
-    },
+    enabled: isAdmin && activeTab === 'categories',
   });
 
-  const { data: dishes, error: dishesError } = useQuery({
+  const { data: dishes } = useQuery({
     queryKey: ['dishes'],
     queryFn: getDishes,
-    enabled: activeTab === 'dishes' && isAdmin,
-    onError: (error) => {
-      if (error?.response?.status === 403) {
-        enqueueSnackbar('Admin access required', { variant: 'error' });
-      }
-    },
+    enabled: isAdmin && activeTab === 'dishes',
   });
 
   // Mutation for deleting items
@@ -134,33 +102,25 @@ const UpdateData = () => {
     },
   });
 
-  const handleEdit = (item, type) => {
-    setEditingId(item._id);
-    setEditData({ ...item });
-  };
-
-  const handleCancel = () => {
-    setEditingId(null);
-    setEditData({});
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setEditData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
-
-  const handleUpdate = (type) => {
-    updateMutation.mutate({ type, id: editingId, data: editData });
-  };
-
-  const handleDelete = (type, id) => {
-    if (window.confirm(`Are you sure you want to delete this ${type}?`)) {
-      deleteMutation.mutate({ type, id });
-    }
-  };
+  // Admin check - moved after all hooks
+  if (!isAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 w-full max-w-2xl">
+          <div className="flex items-center">
+            <FaLock className="mr-2" />
+            <div>
+              <h3 className="font-bold">Access Denied</h3>
+              <p>You don't have admin privileges to access this section.</p>
+              <p className="text-sm mt-2">
+                Please contact your administrator if you believe this is a mistake.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const renderTable = () => {
     let data = [];
