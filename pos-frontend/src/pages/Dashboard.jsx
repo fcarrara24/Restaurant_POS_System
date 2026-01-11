@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MdTableBar, MdCategory } from 'react-icons/md';
+import UpdateData from '../components/dashboard/UpdateData';
 import { BiSolidDish } from 'react-icons/bi';
 import Metrics from '../components/dashboard/Metrics';
 import RecentOrders from '../components/dashboard/RecentOrders';
@@ -11,7 +12,7 @@ const buttons = [
   { label: 'Add Dishes', icon: <BiSolidDish />, action: 'dishes' },
 ];
 
-const tabs = ['Metrics', 'Orders', 'Payments'];
+const tabs = ['Metrics', 'Orders', 'Payments', 'Update'];
 
 const Dashboard = () => {
   useEffect(() => {
@@ -76,6 +77,7 @@ const Dashboard = () => {
           Payment Component Coming Soon
         </div>
       )}
+      {activeTab === 'Update' && <UpdateData />}
 
       {isModalOpen && (
         <Modal action={modalAction} onClose={handleCloseModal} />
