@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   getTables, removeTable, updateTable,
@@ -6,15 +6,24 @@ import {
   getDishes, removeDish, updateDish 
 } from '../../https';
 import { enqueueSnackbar } from 'notistack';
-import { FaEdit, FaTrash, FaSave, FaTimes, FaTable, FaUtensils, FaList } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaSave, FaTimes, FaTable, FaUtensils, FaList, FaLock } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { useSelector } from 'react-redux';
 
 const UpdateData = () => {
   const [activeTab, setActiveTab] = useState('tables');
   const [editingId, setEditingId] = useState(null);
   const [editData, setEditData] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
   const queryClient = useQueryClient();
+  const role = useSelector((state) => {
+    return state?.user?.role || '';  // Return the role string directly
+  });
+  useEffect(() => {
+    // Check if user is admin when component mounts or role changes
+    setIsAdmin(role == 'Admin');
+  }, [role]);
 
   const tabConfig = [
     { id: 'tables', label: 'Tables', icon: <FaTable className="mr-2" /> },
@@ -22,23 +31,58 @@ const UpdateData = () => {
     { id: 'dishes', label: 'Dishes', icon: <FaUtensils className="mr-2" /> },
   ];
 
+  // Show unauthorized message if user is not admin
+  if (!isAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 w-full max-w-2xl">
+          <div className="flex items-center">
+            <FaLock className="mr-2" />
+            <div>
+              <h3 className="font-bold">Access Denied</h3>
+              <p>You don't have admin privileges to access this section.</p>
+              <p className="text-sm mt-2">
+                Please contact your administrator if you believe this is a mistake.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Fetch data based on active tab
-  const { data: tables } = useQuery({
+  const { data: tables, error: tablesError } = useQuery({
     queryKey: ['tables'],
     queryFn: getTables,
-    enabled: activeTab === 'tables',
+    enabled: activeTab === 'tables' && isAdmin,
+    onError: (error) => {
+      if (error?.response?.status === 403) {
+        enqueueSnackbar('Admin access required', { variant: 'error' });
+      }
+    },
   });
 
-  const { data: categories } = useQuery({
+  const { data: categories, error: categoriesError } = useQuery({
     queryKey: ['categories'],
     queryFn: getCategories,
-    enabled: activeTab === 'categories',
+    enabled: activeTab === 'categories' && isAdmin,
+    onError: (error) => {
+      if (error?.response?.status === 403) {
+        enqueueSnackbar('Admin access required', { variant: 'error' });
+      }
+    },
   });
 
-  const { data: dishes } = useQuery({
+  const { data: dishes, error: dishesError } = useQuery({
     queryKey: ['dishes'],
     queryFn: getDishes,
-    enabled: activeTab === 'dishes',
+    enabled: activeTab === 'dishes' && isAdmin,
+    onError: (error) => {
+      if (error?.response?.status === 403) {
+        enqueueSnackbar('Admin access required', { variant: 'error' });
+      }
+    },
   });
 
   // Mutation for deleting items
