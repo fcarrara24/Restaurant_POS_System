@@ -16,7 +16,6 @@ const MenuContainer = () => {
   const [itemCounts, setItemCounts] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-const [dishCounts, setDishCounts] = useState({}); // Add this with other state declarations
 
   const dispatch = useDispatch();
 
