@@ -19,35 +19,15 @@ const MenuContainer = () => {
 
   const dispatch = useDispatch();
 
-  // Log component mount and state changes
-  useEffect(() => {
-    console.log('MenuContainer mounted');
-    return () => console.log('MenuContainer unmounted');
-  }, []);
-
-  // Log selected category changes
-  useEffect(() => {
-    console.log('Selected category changed:', selectedCategory?._id);
-  }, [selectedCategory]);
-
-  // Log item counts changes
-  useEffect(() => {
-    console.log('Item counts updated:', itemCounts);
-  }, [itemCounts]);
-
   // Log dishes changes
-  useEffect(() => {
-    console.log('Dishes updated:', dishes);
-  }, [dishes]);
+  useEffect(() => {  }, [dishes]);
 
   // Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
-      console.log('Fetching categories...');
       try {
         setLoading(true);
         const response = await getAllCategories();
-        console.log('Categories API response:', response);
         
         let categoriesData = [];
         if (response && response.data) {
@@ -74,11 +54,9 @@ const MenuContainer = () => {
           })
         );
 
-        console.log('Setting categories with counts:', categoriesWithCounts);
         setCategories(categoriesWithCounts);
         
         if (categoriesWithCounts.length > 0) {
-          console.log('Setting initial selected category:', categoriesWithCounts[0].name);
           setSelectedCategory(categoriesWithCounts[0]);
         } else {
           console.warn('No categories found in response');
@@ -93,7 +71,6 @@ const MenuContainer = () => {
         });
         setError(errorMsg);
       } finally {
-        console.log('Finished loading categories');
         setLoading(false);
       }
     };
@@ -105,19 +82,13 @@ const MenuContainer = () => {
   useEffect(() => {
     const fetchDishes = async () => {
       if (!selectedCategory) {
-        console.log('No category selected, skipping dishes fetch');
         return;
-      }
-      
-      console.log(`Fetching dishes for category: ${selectedCategory.name} (${selectedCategory._id})`);
-      
+      } 
       try {
         setLoading(true);
         const response = await axios.get(`/api/dishes?category=${selectedCategory._id}`);
-        console.log('Dishes API response:', response.data);
         
         if (response.data && response.data.data) {
-          console.log(`Setting ${response.data.data.length} dishes for category ${selectedCategory.name}`);
           setDishes(response.data.data);
         } else {
           console.warn('Unexpected dishes response format:', response.data);
@@ -133,7 +104,6 @@ const MenuContainer = () => {
         setError(errorMsg);
         setDishes([]);
       } finally {
-        console.log('Finished loading dishes');
         setLoading(false);
       }
     };
@@ -142,10 +112,8 @@ const MenuContainer = () => {
   }, [selectedCategory]);
 
   const incrementCount = (itemId) => {
-    console.log(`Incrementing count for item: ${itemId}`);
     setItemCounts((prev) => {
       const newCount = (prev[itemId] || 0) + 1;
-      console.log(`New count for item ${itemId}: ${newCount}`);
       return {
         ...prev,
         [itemId]: newCount,
@@ -154,14 +122,11 @@ const MenuContainer = () => {
   };
 
   const decrementCount = (itemId) => {
-    console.log(`Decrementing count for item: ${itemId}`);
     setItemCounts((prev) => {
       if (!prev[itemId] || prev[itemId] <= 0) {
-        console.log(`Item ${itemId} count is already 0, not decrementing`);
         return prev;
       }
       const newCount = prev[itemId] - 1;
-      console.log(`New count for item ${itemId}: ${newCount}`);
       return {
         ...prev,
         [itemId]: newCount,
@@ -171,16 +136,13 @@ const MenuContainer = () => {
 
   const getItemCount = (itemId) => {
     const count = itemCounts[itemId] || 0;
-    console.log(`Getting count for item ${itemId}: ${count}`);
     return count;
   };
 
   const handleAddToCart = (item) => {
-    console.log('Adding to cart:', item);
     const count = getItemCount(item._id);
     
     if (count === 0) {
-      console.log('Count is 0, not adding to cart');
       return;
     }
 
@@ -192,10 +154,8 @@ const MenuContainer = () => {
       price: item.price * count,
     };
 
-    console.log('Dispatching to cart:', newObj);
     dispatch(addItems(newObj));
     
-    console.log(`Resetting count for item ${item._id} to 0`);
     setItemCounts((prev) => ({
       ...prev,
       [item._id]: 0,
@@ -203,22 +163,17 @@ const MenuContainer = () => {
   };
 
   if (loading && categories.length === 0) {
-    console.log('Rendering loading state');
     return <div className="text-white text-center p-4">Loading menu...</div>;
   }
 
   if (error) {
-    console.log('Rendering error state:', error);
     return <div className="text-red-500 text-center p-4">{error}</div>;
   }
 
-  console.log('Rendering with categories:', categories.length, 'selected category:', selectedCategory?._id);
-  
   return (
     <>
       <div className="grid grid-cols-4 gap-4 px-10 py-4 w-[100%]">
         {categories.map((category) => {
-          console.log(`Rendering category: ${category.name} (${category._id})`);
           return (
             <div
               key={category._id}
@@ -226,7 +181,6 @@ const MenuContainer = () => {
                 selectedCategory?._id === category._id ? 'bg-[#2a2a2a]' : 'bg-[#1a1a1a] hover:bg-[#222]'
               }`}
               onClick={() => {
-                console.log(`Category clicked: ${category.name} (${category._id})`);
                 setSelectedCategory(category);
                 setItemCounts({});
               }}
@@ -254,7 +208,6 @@ const MenuContainer = () => {
           <div className="text-white">Loading dishes...</div>
         ) : dishes.length > 0 ? (
           dishes.map((item) => {
-            console.log(`Rendering dish: ${item.name} (${item._id}) with count: ${getItemCount(item._id)}`);
             return (
               <div
                 key={item._id}
@@ -278,7 +231,6 @@ const MenuContainer = () => {
                   <div className="flex items-center justify-between bg-[#1f1f1f] px-4 py-3 rounded-lg gap-2 w-[50%]">
                     <button
                       onClick={() => {
-                        console.log(`Decrement button clicked for ${item.name}`);
                         decrementCount(item._id);
                       }}
                       className="text-yellow-500 text-2xl hover:text-yellow-400"
@@ -288,7 +240,6 @@ const MenuContainer = () => {
                     <span className="text-white">{getItemCount(item._id)}</span>
                     <button
                       onClick={() => {
-                        console.log(`Increment button clicked for ${item.name}`);
                         incrementCount(item._id);
                       }}
                       className="text-yellow-500 text-2xl hover:text-yellow-400"
