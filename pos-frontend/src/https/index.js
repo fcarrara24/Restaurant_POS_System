@@ -17,9 +17,9 @@ export const removeTable = (tableId) => axiosWrapper.delete(`/api/table/${tableI
 
 // Category Endpoints 
 export const addCategory = (data) => axiosWrapper.post('/api/category', data);
-export const getCategories = () => axiosWrapper.get('/api/category');
+export const getCategories = () => axiosWrapper.get('/api/category/all');
 export const updateCategory = ({ categoryId, ...categoryData }) =>
-  axiosWrapper.put(`/api/category/${categoryId}`, categoryData);
+  axiosWrapper.put(`/api/category/all/`, categoryData);
 export const removeCategory = (categoryId) => axiosWrapper.delete(`/api/category/${categoryId}`);
 
 // Dish Endpoints
@@ -33,7 +33,7 @@ export const addDish = (formData) =>
   });
 export const getDishes = () => axiosWrapper.get('/api/dishes');
 export const updateDish = ({ dishId, ...dishData }) =>
-  axiosWrapper.put(`/api/dishes/${dishId}`, dishData);
+  axiosWrapper.put(`/api/dishes/`, dishData);
 export const removeDish = (dishId) => axiosWrapper.delete(`/api/dishes/${dishId}`);
 export const popularDishes = () => axiosWrapper.get('/api/dishes/popular');
 

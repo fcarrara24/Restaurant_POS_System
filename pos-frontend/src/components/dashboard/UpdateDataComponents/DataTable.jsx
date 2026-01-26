@@ -17,11 +17,13 @@ const DataTable = ({
     switch (column) {
       case 'Status':
         if (activeTab === 'tables') {
-          return <StatusBadge isActive={item.isOccupied} label={item.isOccupied ? 'Occupied' : 'Available'} />;
+          const isOccupied = Boolean(item.isOccupied);
+          return <StatusBadge isActive={isOccupied} label={isOccupied ? 'Occupied' : 'Available'} />;
         } else if (activeTab === 'dishes') {
-          return <StatusBadge isActive={item.isAvailable} label={item.isAvailable ? 'Available' : 'Unavailable'} />;
+          const isAvailable = item.isAvailable !== false; // Default to true if undefined
+          return <StatusBadge isActive={isAvailable} label={isAvailable ? 'Available' : 'Unavailable'} />;
         }
-        return null;
+        return <StatusBadge isActive={false} label="Unknown" />;
       
       case 'Dish Count':
         return `${item.dishCount || 0} dishes`;

@@ -121,7 +121,6 @@ const Bill = () => {
         const rzp = new window.Razorpay(options);
         rzp.open();
       } catch (error) {
-        console.log(error);
         enqueueSnackbar('Payment Failed!', {
           variant: 'error',
         });

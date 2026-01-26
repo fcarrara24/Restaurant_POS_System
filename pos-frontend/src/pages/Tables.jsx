@@ -25,7 +25,7 @@ const Tables = () => {
     enqueueSnackbar('Something went wrong!', { variant: 'error' });
   }
 
-  console.log(resData);
+  // console.log(resData);
 
   return (
     <section className="bg-[#1f1f1f]  h-[calc(100vh-5rem)] overflow-hidden">

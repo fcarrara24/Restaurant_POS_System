@@ -52,20 +52,14 @@ const UpdateData = () => {
   const { data: categories, isLoading: isLoadingCategories } = useQuery({
     queryKey: ['category/all'],
     queryFn: getCategories,
-    enabled: isAdmin && activeTab === 'categories',
+    enabled: isAdmin && activeTab === 'categories'
   });
 
   const { data: dishes, isLoading: isLoadingDishes } = useQuery({
     queryKey: ['dishes'],
     queryFn: getDishes,
     enabled: isAdmin && activeTab === 'dishes',
-    select: (data) => ({
-      ...data,
-      dishes: data.dishes.map(dish => ({
-        ...dish,
-        category: categories?.data?.categories?.find(cat => cat._id === dish.category) || { name: 'Unknown' }
-      }))
-    })
+    // Let's keep it simple and handle the data structure in getCurrentData
   });
 
   // Mutations
@@ -116,11 +110,21 @@ const UpdateData = () => {
 
   // Get current data based on active tab
   const getCurrentData = () => {
+    // console.log({tables, categories, dishes, activeTab});
+    // console.log('Dishes data structure:', { dishes });
     switch (activeTab) {
-      case 'tables': return tables?.data?.tables || [];
-      case 'categories': return categories?.data?.categories || [];
-      case 'dishes': return dishes?.data?.dishes || [];
-      default: return [];
+      case 'tables': 
+        return Array.isArray(tables?.data?.data) ? tables.data.data : [];
+      case 'categories': 
+        return Array.isArray(categories?.data?.data) ? categories.data.data : [];
+      case 'dishes': 
+        // Handle different possible response structures
+        if (Array.isArray(dishes)) return dishes;
+        if (Array.isArray(dishes?.data)) return dishes.data;
+        if (Array.isArray(dishes?.data?.data)) return dishes.data.data;
+        return [];
+      default: 
+        return [];
     }
   };
 
@@ -236,7 +240,7 @@ const UpdateData = () => {
           }
           return item[column.toLowerCase().replace(/\s+/g, '')] || '';
         }}
-      />
+      /> 
     </div>
   );
 };

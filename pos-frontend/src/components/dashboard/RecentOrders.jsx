@@ -44,8 +44,6 @@ const RecentOrders = () => {
     enqueueSnackbar('Something went wrong!', { variant: 'error' });
   }
 
-  console.log(resData.data.data);
-
   return (
     <div className="container mx-auto bg-[#262626] p-4 rounded-lg">
       <h2 className="text-[#f5f5f5] text-xl font-semibold mb-4">
