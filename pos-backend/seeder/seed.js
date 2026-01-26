@@ -54,9 +54,148 @@ const seedDatabase = async () => {
         category: 'Main Course',
         description: 'Tender chicken in rich tomato gravy',
         isAvailable: true, 
-        image: readImageFile('gulab-jamun.webp')
         // image: readImageFile('butter-chicken.jpg') // trying image
       },
+      { 
+        name: 'Garlic Bread', 
+        description: 'Toasted bread with garlic butter and herbs', 
+        price: 4.99, 
+        category: 'Starters',
+        isAvailable: true
+      },
+      { 
+        name: 'Bruschetta', 
+        description: 'Toasted bread topped with tomatoes, garlic, and basil', 
+        price: 6.99, 
+        category: 'Starters',
+        isAvailable: true
+      },
+      { 
+        name: 'Spring Rolls', 
+        description: 'Crispy vegetable spring rolls with sweet chili sauce', 
+        price: 5.99, 
+        category: 'Starters',
+        isAvailable: true
+      },
+      // Main Course
+      { 
+        name: 'Grilled Salmon', 
+        description: 'Fresh salmon fillet with lemon butter sauce', 
+        price: 22.99, 
+        category: 'Main Course',
+        isAvailable: true
+      },
+      { 
+        name: 'Beef Tenderloin', 
+        description: '8oz grass-fed beef with red wine reduction', 
+        price: 28.99, 
+        category: 'Main Course',
+        isAvailable: true
+      },
+      { 
+        name: 'Vegetable Pasta', 
+        description: 'Penne with seasonal vegetables in tomato sauce', 
+        price: 16.99, 
+        category: 'Main Course',
+        isAvailable: true
+      },
+      // Beverages
+      { 
+        name: 'Fresh Orange Juice', 
+        description: 'Freshly squeezed orange juice', 
+        price: 3.99, 
+        category: 'Beverages',
+        isAvailable: true
+      },
+      { 
+        name: 'Iced Tea', 
+        description: 'Homemade iced tea with lemon', 
+        price: 2.99, 
+        category: 'Beverages',
+        isAvailable: true
+      },
+      { 
+        name: 'Lemonade', 
+        description: 'Freshly made lemonade with mint', 
+        price: 3.49, 
+        category: 'Beverages',
+        isAvailable: true
+      },
+      // Soups
+      { 
+        name: 'Tomato Basil', 
+        description: 'Creamy tomato soup with fresh basil', 
+        price: 5.99, 
+        category: 'Soups',
+        isAvailable: true
+      },
+      { 
+        name: 'Chicken Noodle', 
+        description: 'Classic chicken noodle soup', 
+        price: 6.49, 
+        category: 'Soups',
+        isAvailable: true
+      },
+      // Desserts
+      { 
+        name: 'Chocolate Lava Cake', 
+        description: 'Warm chocolate cake with gooey center', 
+        price: 7.99, 
+        category: 'Desserts',
+        isAvailable: true
+      },
+      { 
+        name: 'Tiramisu', 
+        description: 'Classic Italian coffee-flavored dessert', 
+        price: 8.49, 
+        category: 'Desserts',
+        isAvailable: true
+      },
+      // Pizzas
+      { 
+        name: 'Margherita', 
+        description: 'Classic pizza with tomato sauce and mozzarella', 
+        price: 12.99, 
+        category: 'Pizzas',
+        isAvailable: true
+      },
+      { 
+        name: 'Pepperoni', 
+        description: 'Pizza with tomato sauce, mozzarella, and pepperoni', 
+        price: 14.99, 
+        category: 'Pizzas',
+        isAvailable: true
+      },
+      // Alcoholic Drinks
+      { 
+        name: 'House Red Wine', 
+        description: 'Glass of our finest red wine', 
+        price: 7.99, 
+        category: 'Alcoholic Drinks',
+        isAvailable: true
+      },
+      { 
+        name: 'Craft Beer', 
+        description: 'Local craft beer selection', 
+        price: 6.99, 
+        category: 'Alcoholic Drinks',
+        isAvailable: true
+      },
+      // Salads
+      { 
+        name: 'Caesar Salad', 
+        description: 'Romaine lettuce, croutons, parmesan with Caesar dressing', 
+        price: 9.99, 
+        category: 'Salads',
+        isAvailable: true
+      },
+      { 
+        name: 'Greek Salad', 
+        description: 'Fresh vegetables, feta, and olives with olive oil dressing', 
+        price: 10.99, 
+        category: 'Salads',
+        isAvailable: true
+      }
       // Add more dishes as needed
     ];
 

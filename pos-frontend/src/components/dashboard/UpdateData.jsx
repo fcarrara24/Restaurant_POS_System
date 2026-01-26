@@ -26,7 +26,7 @@ const UpdateData = () => {
     setSearchTerm,
     editingId,
     editData,
-    setEditData,  // Make sure this is included
+    setEditData,
     isEditModalOpen,
     isDeleteModalOpen,
     itemToDelete,
@@ -37,23 +37,10 @@ const UpdateData = () => {
     formFields: getFormFields,
     handleEditClick,
     handleDeleteClick,
-    handleInputChange
+    handleInputChange,
+    handleSave: handleSaveData,
+    handleConfirmDelete
   } = useDataManagement();
-
-
-  const handleSave = async (e) => {
-    e.preventDefault();
-    try {
-      await updateMutation.mutateAsync(editData);
-      closeEditModal();
-    } catch (error) {
-      console.error('Error saving data:', error);
-    }
-  };
-  
-  const handleEdit = (item) => {
-    handleEditClick(item);
-  };
 
   // Data fetching
   const { data: tables, isLoading: isLoadingTables } = useQuery({
@@ -167,16 +154,14 @@ const UpdateData = () => {
     dishes: isLoadingDishes
   }[activeTab];
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    updateMutation.mutate(editData);
-  };
-
-  // Handle delete confirmation
-  const handleConfirmDelete = () => {
-    if (itemToDelete) {
-      deleteMutation.mutate(itemToDelete);
+  // Use handleSave from useDataManagement but wrap it with mutation handling
+  const handleSaveWithMutation = async (formData) => {
+    try {
+      await updateMutation.mutateAsync(formData);
+      await handleSaveData(formData);
+    } catch (error) {
+      console.error('Error saving data:', error);
+      enqueueSnackbar('Failed to save changes', { variant: 'error' });
     }
   };
 
@@ -236,7 +221,7 @@ const UpdateData = () => {
         setEditData={setEditData}
         onEdit={handleEditClick}
         onDelete={handleDeleteClick}
-        onSave={handleSave}
+        onSave={handleSaveWithMutation}
         onCancel={closeEditModal}
         isLoading={isLoading}
         searchTerm={searchTerm}
