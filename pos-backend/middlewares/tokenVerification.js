@@ -36,7 +36,7 @@ const isAdmin = (req, res, next) => {
       return next(error);
     }
 
-    if (req.user.role !== 'admin') {
+    if (req.user.role !== 'Admin') {
       const error = createHttpError(403, 'Access denied. Admin privileges required');
       return next(error);
     }

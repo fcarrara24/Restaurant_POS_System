@@ -8,7 +8,7 @@ const {
   getDishImage, 
   getPopularDishes
 } = require('../controllers/dishController');
-const { isVerifiedUser } = require('../middlewares/tokenVerification');
+const { isVerifiedUser, isAdmin } = require('../middlewares/tokenVerification');
 const upload = require('../middlewares/upload');
 
 const router = express.Router();
@@ -28,8 +28,8 @@ router.route('/popular')
 // 8000/api/dishes/:id - READ, UPDATE, DELETE a specific dish
 router.route('/:id')
   .get(getDish)
-  .put(isVerifiedUser, upload.single('image'), updateDish)
-  .delete(isVerifiedUser, deleteDish);
+  .put(isAdmin, upload.single('image'), updateDish)
+  .delete(isAdmin, deleteDish);
 
 // 8000/api/dishes/:id/image - GET dish image
 router.route('/:id/image')

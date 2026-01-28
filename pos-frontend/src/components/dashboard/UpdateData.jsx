@@ -25,6 +25,7 @@ const UpdateData = () => {
     searchTerm,
     setSearchTerm,
     editingId,
+    setEditingId,
     editData,
     setEditData,
     isEditModalOpen,
@@ -35,8 +36,6 @@ const UpdateData = () => {
     closeDeleteModal,
     columns,
     formFields: getFormFields,
-    handleEditClick,
-    handleDeleteClick,
     handleInputChange,
     handleSave: handleSaveData,
     handleConfirmDelete
@@ -158,14 +157,45 @@ const UpdateData = () => {
     dishes: isLoadingDishes
   }[activeTab];
 
-  // Use handleSave from useDataManagement but wrap it with mutation handling
+  // Handle edit with proper data structure
+  const handleEdit = (item) => {
+    setEditingId(item._id);
+    setEditData(item);
+  };
+
+  // Handle delete with confirmation
+  const handleDelete = (item) => {
+    if (window.confirm(`Are you sure you want to delete this ${activeTab.slice(0, -1)}?`)) {
+      deleteMutation.mutate(item);
+    }
+  };
+
+  // Handle save with proper data structure
   const handleSaveWithMutation = async (formData) => {
     try {
-      await updateMutation.mutateAsync(formData);
-      await handleSaveData(formData);
+      // If it's a new item (no _id), we need to handle it differently
+      if (editingId === 'new') {
+        // Handle create new item
+        const response = await (() => {
+          switch (activeTab) {
+            case 'tables': return axiosWrapper.post('/api/table', formData);
+            case 'categories': return axiosWrapper.post('/api/category', formData);
+            case 'dishes': return axiosWrapper.post('/api/dishes', formData);
+            default: throw new Error('Invalid type');
+          }
+        })();
+        
+        // Invalidate and refetch
+        queryClient.invalidateQueries([activeTab]);
+        enqueueSnackbar(`${activeTab.slice(0, -1)} created successfully`, { variant: 'success' });
+      } else {
+        // Handle update existing item
+        await updateMutation.mutateAsync(formData);
+      }
+      closeEditModal();
     } catch (error) {
       console.error('Error saving data:', error);
-      enqueueSnackbar('Failed to save changes', { variant: 'error' });
+      enqueueSnackbar(error.response?.data?.message || 'Failed to save changes', { variant: 'error' });
     }
   };
 
@@ -223,8 +253,8 @@ const UpdateData = () => {
         editingId={editingId}
         editData={editData}
         setEditData={setEditData}
-        onEdit={handleEditClick}
-        onDelete={handleDeleteClick}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
         onSave={handleSaveWithMutation}
         onCancel={closeEditModal}
         isLoading={isLoading}

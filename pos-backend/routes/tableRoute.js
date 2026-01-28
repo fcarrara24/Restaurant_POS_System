@@ -6,11 +6,11 @@ const {
   removeTable
 } = require('../controllers/tableController');
 const router = express.Router();
-const { isVerifiedUser } = require('../middlewares/tokenVerification');
+const { isVerifiedUser, isAdmin } = require('../middlewares/tokenVerification');
 
-router.route('/').post(isVerifiedUser, addTable);
+router.route('/').post(isAdmin, addTable);
 router.route('/').get(isVerifiedUser, getTables);
-router.route('/:id').put(isVerifiedUser, updateTable);
-router.route('/:id').delete(isVerifiedUser, removeTable);
+router.route('/:id').put(isAdmin, updateTable);
+router.route('/:id').delete(isAdmin, removeTable);
 
 module.exports = router;

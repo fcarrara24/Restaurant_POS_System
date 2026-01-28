@@ -122,6 +122,7 @@ export const useDataManagement = (initialTab = 'tables') => {
     // Actions
     setActiveTab,
     setSearchTerm,
+    setEditingId,
     setEditData,
     handleEditClick,
     handleDeleteClick,
